@@ -1,3 +1,5 @@
+DEBUG = True
+
 BROWSER = "chrome"
 
 CLIENTTYPE = ""
