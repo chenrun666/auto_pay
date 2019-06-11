@@ -1,7 +1,7 @@
 """
 出票的执行流程
 """
-import re
+import re, time
 
 from common.myexception import NoFlightException, PriceException  # 自定义异常信息
 
@@ -58,16 +58,110 @@ def select_flight_wrapper(func):
 
 
 # 校验选择的价格是否变价
-def checkout_price(func):
+def checkout_price_wrapper(func):
     def inner(self, *args, **kwargs):
-        # 获取选中的价格
-        selected_price = self.get_text(
-            xpath='//div[contains(@class, "fare-button_selected")]/button'
+        # 获取选中的价格, 不含税的价格
+        sub_total = self.get_text(
+            xpath='//div[@class="price-summary price-summary_last"]/div//span[@class="currency--symbol"]/following-sibling::span[1]'
+        )
+        tax_price = self.get_text(
+            xpath='//div[@class="checkout-flight-total-summary"]//div[@class="summary--taxes-fees"]//span[@class="currency currency_dollars"]/span[2]'
         )[1:]
 
-        if self.task_flight_price < int(selected_price):
+        total_price = self.get_text(
+            xpath='//div[@class="checkout-flight-total-summary"]//div[@class="summary--flight-total"]//span[@class="currency currency_dollars"]/span[2]/span[2]'
+        )
+
+        # 对比含税的价格
+        if self.task_flight_price < int(total_price.replace(",", "")):
             raise PriceException("页面价格大于任务配置价格！购买失败")
 
+        func(self)
+
+    return inner
+
+
+# 填写乘客信息
+def fill_passengers_wrapper(func):
+    def inner(self, *args, **kwargs):
+        gender_map = {
+            "F": 2,
+            "M": 1
+        }
+
+        # 获取所有的乘客输入面板
+        all_passengers_table = self.get_ele_list(
+            xpath='//div[@class="form-container form-container_simple flying-form"]//form/section'
+        )
+        for index, item in enumerate(all_passengers_table):
+            # 乘客姓名
+            passenger_info = self.passenger_list[index]
+            last_name, first_name = passenger_info["name"].split("/")
+
+            birthday_year, birthday_month, birthday_day = passenger_info["birthday"].split("-")
+
+            gender = passenger_info["sex"]
+
+            self.fill_input(
+                xpath='./div/div[contains(@class, "first-name")]//input',
+                content=first_name,
+                el=item
+            )
+
+            self.fill_input(
+                xpath='./div/div[contains(@class, "last-name")]//input',
+                content=last_name,
+                el=item
+            )
+
+            self.fill_input(
+                xpath='./div/div[contains(@class, "birth")]//input[@aria-label="Day"]',
+                content=birthday_day,
+                el=item
+            )
+
+            self.fill_input(
+                xpath='./div/div[contains(@class, "birth")]//input[@aria-label="Year"]',
+                content=birthday_year,
+                el=item
+            )
+
+            # 选择月份
+            self.click_btn(
+                xpath='./div/div[contains(@class, "birth")]//div[contains(@class, "month")]//input',
+                content=birthday_year,
+                el=item
+            )
+            self.click_btn(
+                xpath=f'//ul[contains(@id, "BirthMonth")]/li[{int(birthday_month)}]'
+            )
+
+            # 选择性别
+            self.click_btn(
+                xpath='./div/div[contains(@class, "gender")]//input',
+                content=birthday_year,
+                el=item
+            )
+            self.click_btn(
+                xpath=f'//ul[contains(@id, "passengerGender")]/li[{gender_map[gender]}]'
+            )
+
+        func(self)
+
+    return inner
+
+
+# 填写联系人信息
+def fill_contact_wrapper(func):
+    def inner(self, *args, **kwargs):
+        func(self)
+
+    return inner
+
+
+# 填写支付信息
+def fill_pay_info_wrapper(func):
+    def inner(self, *args, **kwargs):
         func(self)
 
     return inner
