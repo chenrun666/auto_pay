@@ -25,6 +25,12 @@ class WN(Action):
         self.dep_flight_number = task["depFlightNumber"]
         self.task_flight_price = task["targetPrice"]
 
+        # 联系人信息
+        self.contact = task["contactVO"]
+
+        # 支付信息
+        self.pay_info = task["payPaymentInfoVo"]
+
         # 乘客信息
         self.passenger_list = task["passengerVOList"]
         infant, adult, senior = parse_passenger_info(self.passenger_list, self.dep_date)
