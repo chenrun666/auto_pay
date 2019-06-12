@@ -1,0 +1,244 @@
+{
+  "data": {
+    "priceFlightsResults": {
+      "itineraryPricings": [
+        {
+          "passengerType": "ADULT",
+          "numberOfPassengers": 1,
+          "accountNumber": null,
+          "rapidRewardTier": null,
+          "boundFlightDetails": [
+            {
+              "segments": [
+                {
+                  "originationAirportCode": "LGB",
+                  "destinationAirportCode": "LAS",
+                  "departureDateTime": "2019-06-29T10:40:00.000-07:00",
+                  "arrivalDateTime": "2019-06-29T11:45:00.000-07:00",
+                  "marketingCarrier": "WN",
+                  "marketingFlightNumber": "5181",
+                  "operatingCarrier": "WN",
+                  "operatingFlightNumber": null,
+                  "aircraftEquipmentType": "73W",
+                  "wifiOnBoard": true,
+                  "flightDuration": "01:05",
+                  "onTimePerformanceKey": "LGBLAS51811040WN",
+                  "flightLegs": null,
+                  "numberOfStops": 0,
+                  "segmentIdentifier": "WN5181LGBLAS20190629"
+                },
+                {
+                  "originationAirportCode": "LAS",
+                  "destinationAirportCode": "TUL",
+                  "departureDateTime": "2019-06-29T13:10:00.000-07:00",
+                  "arrivalDateTime": "2019-06-29T17:45:00.000-05:00",
+                  "marketingCarrier": "WN",
+                  "marketingFlightNumber": "5104",
+                  "operatingCarrier": "WN",
+                  "operatingFlightNumber": null,
+                  "aircraftEquipmentType": "73H",
+                  "wifiOnBoard": true,
+                  "flightDuration": "02:35",
+                  "onTimePerformanceKey": "LASTUL51041310WN",
+                  "flightLegs": null,
+                  "numberOfStops": 0,
+                  "segmentIdentifier": "WN5104LASTUL20190629"
+                }
+              ],
+              "originationAirportCode": "LGB",
+              "destinationAirportCode": "TUL",
+              "departureDateTime": "2019-06-29T10:40:00.000-07:00",
+              "arrivalDateTime": "2019-06-29T17:45:00.000-05:00",
+              "flightDuration": "05:05",
+              "fareFamily": "WGA",
+              "numberOfStops": 1,
+              "numberOfPlaneChanges": 1
+            }
+          ],
+          "boundPrices": [
+            {
+              "originationAirportCode": "LGB",
+              "destinationAirportCode": "TUL",
+              "fareProduct": {
+                "productId": "WGA|ADT|WLA7PNRO,W,LGB,LAS,2019-06-29T10:40-07:00,2019-06-29T11:45-07:00,WN,WN,5181,73W|WLA7PNRO,W,LAS,TUL,2019-06-29T13:10-07:00,2019-06-29T17:45-05:00,WN,WN,5104,73H",
+                "fareFamily": "WGA",
+                "farePricingType": "ADULT",
+                "passengerType": "ADULT",
+                "availabilityStatus": "AVAILABLE",
+                "fare": {
+                  "baseFare": {
+                    "value": "306.05",
+                    "currencyCode": "USD"
+                  },
+                  "fareTaxesAndFees": null,
+                  "totalTaxesAndFees": {
+                    "value": "45.95",
+                    "currencyCode": "USD"
+                  },
+                  "totalFare": {
+                    "value": "352.00",
+                    "currencyCode": "USD"
+                  },
+                  "accrualPoints": null,
+                  "fareType": "NONDISCOUNT"
+                },
+                "currencyType": "REVENUE",
+                "segmentFareDetails": [
+                  {
+                    "fareFamily": "WGA",
+                    "bookingCode": "W",
+                    "fareBasisCode": "WLA7PNRO",
+                    "seatsAvailable": 7,
+                    "segmentIdentifier": "WN5181LGBLAS20190629"
+                  },
+                  {
+                    "fareFamily": "WGA",
+                    "bookingCode": "W",
+                    "fareBasisCode": "WLA7PNRO",
+                    "seatsAvailable": 7,
+                    "segmentIdentifier": "WN5104LASTUL20190629"
+                  }
+                ]
+              },
+              "total": {
+                "value": "352.00",
+                "currencyCode": "USD"
+              }
+            }
+          ],
+          "itineraryPrice": {
+            "recordType": "FARE",
+            "farePassengerType": "ADULT",
+            "farePricingType": "ADULT",
+            "productIds": [
+              "WGA|ADT|WLA7PNRO,W,LGB,LAS,2019-06-29T10:40-07:00,2019-06-29T11:45-07:00,WN,WN,5181,73W|WLA7PNRO,W,LAS,TUL,2019-06-29T13:10-07:00,2019-06-29T17:45-05:00,WN,WN,5104,73H"
+            ],
+            "fare": {
+              "baseFare": {
+                "value": "306.05",
+                "currencyCode": "USD"
+              },
+              "fareTaxesAndFees": [
+                {
+                  "code": "US",
+                  "codeDescription": "U.S. Transportation Tax",
+                  "type": "LO",
+                  "typeDescription": "Local",
+                  "amount": {
+                    "value": "22.95",
+                    "currencyCode": "USD"
+                  }
+                },
+                {
+                  "code": "AY",
+                  "codeDescription": "U.S. 9/11 Security Fee",
+                  "type": "SE",
+                  "typeDescription": "Security",
+                  "amount": {
+                    "value": "5.60",
+                    "currencyCode": "USD"
+                  }
+                },
+                {
+                  "code": "ZP",
+                  "codeDescription": "U.S. Flight Segment Tax",
+                  "type": "VO",
+                  "typeDescription": "Trip",
+                  "amount": {
+                    "value": "8.40",
+                    "currencyCode": "USD"
+                  }
+                },
+                {
+                  "code": "XF",
+                  "codeDescription": "U.S. Passenger Facility Chg",
+                  "type": null,
+                  "typeDescription": "Other Tax Type",
+                  "amount": {
+                    "value": "9.00",
+                    "currencyCode": "USD"
+                  }
+                }
+              ],
+              "totalTaxesAndFees": {
+                "value": "45.95",
+                "currencyCode": "USD"
+              },
+              "totalFare": {
+                "value": "352.00",
+                "currencyCode": "USD"
+              },
+              "accrualPoints": 1837,
+              "fareType": "NONDISCOUNT"
+            },
+            "itineraryPriceReference": "1"
+          },
+          "pointsTotal": null,
+          "airTotal": {
+            "value": "352.00",
+            "currencyCode": "USD"
+          },
+          "changeItinerary": null,
+          "changeReservationInformation": null,
+          "waivedFare": null,
+          "promocodeNotification": {
+            "discountUsedType": "NONE",
+            "discountRateType": "NONE",
+            "message": null,
+            "code": null,
+            "errors": [],
+            "alerts": []
+          }
+        }
+      ],
+      "tripType": "oneway",
+      "segmentProducts": [
+        {
+          "ADULT": {
+            "productId": "WGA|ADT|WLA7PNRO,W,LGB,LAS,2019-06-29T10:40-07:00,2019-06-29T11:45-07:00,WN,WN,5181,73W|WLA7PNRO,W,LAS,TUL,2019-06-29T13:10-07:00,2019-06-29T17:45-05:00,WN,WN,5104,73H",
+            "classOfService": "W",
+            "passengerType": "ADULT",
+            "availabilityStatus": "AVAILABLE",
+            "originalFare": null,
+            "fare": {
+              "baseFare": {
+                "value": "306.05",
+                "currencyCode": "USD"
+              },
+              "totalTaxesAndFees": {
+                "value": "45.95",
+                "currencyCode": "USD"
+              },
+              "totalFare": {
+                "value": "352.00",
+                "currencyCode": "USD"
+              }
+            },
+            "waivedFare": null
+          }
+        }
+      ]
+    }
+  },
+  "success": true,
+  "notifications": null,
+  "uiMetadata": {
+    "paymentInfoService": true,
+    "discountServiceMaintenanceModeForDotcom": false,
+    "discountServiceMaintenanceModeForSwabiz": false,
+    "cvvForSavedCreditCard": true,
+    "cvvForSavedCreditCardSwabiz": false,
+    "carCrossSellEnabled": true,
+    "cvvForEnteredCreditCardSwabiz": false,
+    "chapiVersion": "1.17.1",
+    "lowFareCalendarService": true,
+    "airFirstTimeFlyer": true,
+    "rapidRewardsMaintenance": false,
+    "earlyBirdCrossSellEnabled": true,
+    "proxyLogout": true,
+    "payPalService": true,
+    "SwabizRetireMuleCLCSCompanyLink": false,
+    "ProxyBookingTravelers": false,
+    "fundsService": true
+  }
+}

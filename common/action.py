@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.select import Select
+from selenium.webdriver import ActionChains
 
 from conf.settings import *
 from common.log import logger
@@ -30,7 +31,7 @@ class Action(object):
                 # 添加代理
                 chromeOptions = webdriver.ChromeOptions()
                 chromeOptions.add_experimental_option('excludeSwitches', ['enable-automation'])
-                # chromeOptions.add_argument("--proxy-server=http://127.0.0.1:8080")
+                chromeOptions.add_argument("--proxy-server=http://127.0.0.1:8080")
                 # self.driver = webdriver.Chrome(chrome_options=chromeOptions, executable_path=CHROMEPATH)
                 self.driver = webdriver.Chrome(options=chromeOptions)
 
@@ -39,13 +40,14 @@ class Action(object):
 
             elif BROWSER == "firefox":
                 # window  C:\Users\Administrator\AppData\Roaming\Mozilla\Firefox\Profiles\v4gtopon.default
-                profile_directory = "/Users/chenrun/Library/Application Support/Firefox/Profiles/3y3i8wyv.default"
-                profile = webdriver.FirefoxProfile(profile_directory)
-                # profile.set_preference('network.proxy.type', 1)
-                # profile.set_preference('network.proxy.http', '127.0.0.1')
-                # profile.set_preference('network.proxy.http_port', 8080)
-                # profile.set_preference('network.proxy.ssl', '127.0.0.1')
-                # profile.set_preference('network.proxy.ssl_port', 8080)
+                # profile_directory = "/Users/chenrun/Library/Application Support/Firefox/Profiles/3y3i8wyv.default"
+                # profile = webdriver.FirefoxProfile(profile_directory)
+                profile = webdriver.FirefoxProfile()
+                profile.set_preference('network.proxy.type', 1)
+                profile.set_preference('network.proxy.http', '127.0.0.1')
+                profile.set_preference('network.proxy.http_port', 8080)
+                profile.set_preference('network.proxy.ssl', '127.0.0.1')
+                profile.set_preference('network.proxy.ssl_port', 8080)
                 # profile.update_preferences()
                 self.driver = webdriver.Firefox(profile)
                 # self.driver = webdriver.Firefox()
@@ -57,7 +59,8 @@ class Action(object):
             self.driver.get(self.index_url)
 
             time.sleep(3)
-            # self.driver.set_window_size(500, 700)
+            if MODE == "mobile":
+                self.driver.set_window_size(500, 700)
             logger.info("初始化webdriver对象")
         except TimeoutException:
             logger.error("初始化超时")
@@ -237,4 +240,3 @@ class Action(object):
             self.driver.close()
         except Exception:
             pass
-

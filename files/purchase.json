@@ -1,0 +1,370 @@
+{
+  "air": {
+    "fares": {
+      "0": {
+        "departureDate": "2019-06-29",
+        "destinationAirportCode": "TUL",
+        "international": false,
+        "nextDay": false,
+        "originationAirportCode": "LGB",
+        "stopsDetails": [
+          {
+            "originationAirportCode": "LGB",
+            "destinationAirportCode": "LAS",
+            "flightNumber": "5181",
+            "legDuration": 65,
+            "stopDuration": 85,
+            "changePlanes": true,
+            "departureTime": "10:40",
+            "arrivalTime": "11:45",
+            "departureDateTime": "2019-06-29T10:40:00.000-07:00",
+            "arrivalDateTime": "2019-06-29T11:45:00.000-07:00",
+            "operatingCarrierCode": "WN",
+            "marketingCarrierCode": "WN",
+            "aircraftEquipmentType": "73W",
+            "features": [
+              "WIFI"
+            ]
+          },
+          {
+            "originationAirportCode": "LAS",
+            "destinationAirportCode": "TUL",
+            "flightNumber": "5104",
+            "legDuration": 155,
+            "stopDuration": 0,
+            "changePlanes": null,
+            "departureTime": "13:10",
+            "arrivalTime": "17:45",
+            "departureDateTime": "2019-06-29T13:10:00.000-07:00",
+            "arrivalDateTime": "2019-06-29T17:45:00.000-05:00",
+            "operatingCarrierCode": "WN",
+            "marketingCarrierCode": "WN",
+            "aircraftEquipmentType": "73H",
+            "features": [
+              "WIFI"
+            ]
+          }
+        ],
+        "ADULT": {
+          "arrivalTime": "17:45",
+          "departureTime": "10:40",
+          "fareData": {
+            "productId": "WGA|ADT|WLA7PNRO,W,LGB,LAS,2019-06-29T10:40-07:00,2019-06-29T11:45-07:00,WN,WN,5181,73W|WLA7PNRO,W,LAS,TUL,2019-06-29T13:10-07:00,2019-06-29T17:45-05:00,WN,WN,5104,73H",
+            "classOfService": "W",
+            "passengerType": "ADULT",
+            "availabilityStatus": "AVAILABLE",
+            "originalFare": null,
+            "fare": {
+              "baseFare": {
+                "value": "306.05",
+                "currencyCode": "USD"
+              },
+              "totalTaxesAndFees": {
+                "value": "45.95",
+                "currencyCode": "USD"
+              },
+              "totalFare": {
+                "value": "352.00",
+                "currencyCode": "USD"
+              },
+              "accrualPoints": "1837"
+            },
+            "waivedFare": null
+          },
+          "fareType": "WGA",
+          "flightNumbers": [
+            "5181",
+            "5104"
+          ],
+          "hasUpgradeData": false,
+          "nextDay": false,
+          "rowSummary": {
+            "BUS": "615.68",
+            "ANY": "587.68",
+            "WGA": "352.00"
+          },
+          "stopsDetails": [
+            {
+              "originationAirportCode": "LGB",
+              "destinationAirportCode": "LAS",
+              "flightNumber": "5181",
+              "legDuration": 65,
+              "stopDuration": 85,
+              "changePlanes": true,
+              "departureTime": "10:40",
+              "arrivalTime": "11:45",
+              "departureDateTime": "2019-06-29T10:40:00.000-07:00",
+              "arrivalDateTime": "2019-06-29T11:45:00.000-07:00",
+              "operatingCarrierCode": "WN",
+              "marketingCarrierCode": "WN",
+              "aircraftEquipmentType": "73W",
+              "features": [
+                "WIFI"
+              ]
+            },
+            {
+              "originationAirportCode": "LAS",
+              "destinationAirportCode": "TUL",
+              "flightNumber": "5104",
+              "legDuration": 155,
+              "stopDuration": 0,
+              "changePlanes": null,
+              "departureTime": "13:10",
+              "arrivalTime": "17:45",
+              "departureDateTime": "2019-06-29T13:10:00.000-07:00",
+              "arrivalDateTime": "2019-06-29T17:45:00.000-05:00",
+              "operatingCarrierCode": "WN",
+              "marketingCarrierCode": "WN",
+              "aircraftEquipmentType": "73H",
+              "features": [
+                "WIFI"
+              ]
+            }
+          ],
+          "upgradeFare": {
+            "productId": "BUS|ADT|KZBP,K,LGB,LAS,2019-06-29T10:40-07:00,2019-06-29T11:45-07:00,WN,WN,5181,73W|KZBP,K,LAS,TUL,2019-06-29T13:10-07:00,2019-06-29T17:45-05:00,WN,WN,5104,73H",
+            "classOfService": "K",
+            "passengerType": "ADULT",
+            "availabilityStatus": "AVAILABLE",
+            "originalFare": null,
+            "fare": {
+              "baseFare": {
+                "value": "551.33",
+                "currencyCode": "USD"
+              },
+              "totalTaxesAndFees": {
+                "value": "64.35",
+                "currencyCode": "USD"
+              },
+              "totalFare": {
+                "value": "615.68",
+                "currencyCode": "USD"
+              },
+              "accrualPoints": "6616"
+            },
+            "waivedFare": null
+          },
+          "drawerUpgradeAccepted": false,
+          "drawerUpgradeOffered": false,
+          "modalUpgradeAccepted": false,
+          "modalUpgradeOffered": false
+        }
+      }
+    },
+    "id": "air",
+    "query": {
+      "int": "HOMEQBOMAIR",
+      "adultPassengersCount": "1",
+      "departureDate": "2019-06-29",
+      "departureTimeOfDay": "ALL_DAY",
+      "destinationAirportCode": "TUL",
+      "fareType": "USD",
+      "originationAirportCode": "LGB",
+      "passengerType": "ADULT",
+      "promoCode": "",
+      "reset": "true",
+      "returnDate": "",
+      "returnTimeOfDay": "ALL_DAY",
+      "seniorPassengersCount": "0",
+      "tripType": "oneway"
+    },
+    "earlyBirdProduct": null,
+    "funds": null,
+    "unaccompaniedMinorFee": null,
+    "itineraryPricings": [
+      {
+        "passengerType": "ADULT",
+        "numberOfPassengers": 1,
+        "accountNumber": null,
+        "rapidRewardTier": null,
+        "boundFlightDetails": [
+          {
+            "segments": [
+              {
+                "originationAirportCode": "LGB",
+                "destinationAirportCode": "LAS",
+                "departureDateTime": "2019-06-29T10:40:00.000-07:00",
+                "arrivalDateTime": "2019-06-29T11:45:00.000-07:00",
+                "marketingCarrier": "WN",
+                "marketingFlightNumber": "5181",
+                "operatingCarrier": "WN",
+                "operatingFlightNumber": null,
+                "aircraftEquipmentType": "73W",
+                "wifiOnBoard": true,
+                "flightDuration": "01:05",
+                "onTimePerformanceKey": "LGBLAS51811040WN",
+                "flightLegs": null,
+                "numberOfStops": 0,
+                "segmentIdentifier": "WN5181LGBLAS20190629"
+              },
+              {
+                "originationAirportCode": "LAS",
+                "destinationAirportCode": "TUL",
+                "departureDateTime": "2019-06-29T13:10:00.000-07:00",
+                "arrivalDateTime": "2019-06-29T17:45:00.000-05:00",
+                "marketingCarrier": "WN",
+                "marketingFlightNumber": "5104",
+                "operatingCarrier": "WN",
+                "operatingFlightNumber": null,
+                "aircraftEquipmentType": "73H",
+                "wifiOnBoard": true,
+                "flightDuration": "02:35",
+                "onTimePerformanceKey": "LASTUL51041310WN",
+                "flightLegs": null,
+                "numberOfStops": 0,
+                "segmentIdentifier": "WN5104LASTUL20190629"
+              }
+            ],
+            "originationAirportCode": "LGB",
+            "destinationAirportCode": "TUL",
+            "departureDateTime": "2019-06-29T10:40:00.000-07:00",
+            "arrivalDateTime": "2019-06-29T17:45:00.000-05:00",
+            "flightDuration": "05:05",
+            "fareFamily": "WGA",
+            "numberOfStops": 1,
+            "numberOfPlaneChanges": 1
+          }
+        ],
+        "boundPrices": [
+          {
+            "originationAirportCode": "LGB",
+            "destinationAirportCode": "TUL",
+            "fareProduct": {
+              "productId": "WGA|ADT|WLA7PNRO,W,LGB,LAS,2019-06-29T10:40-07:00,2019-06-29T11:45-07:00,WN,WN,5181,73W|WLA7PNRO,W,LAS,TUL,2019-06-29T13:10-07:00,2019-06-29T17:45-05:00,WN,WN,5104,73H",
+              "fareFamily": "WGA",
+              "farePricingType": "ADULT",
+              "passengerType": "ADULT",
+              "availabilityStatus": "AVAILABLE",
+              "fare": {
+                "baseFare": {
+                  "value": "306.05",
+                  "currencyCode": "USD"
+                },
+                "fareTaxesAndFees": null,
+                "totalTaxesAndFees": {
+                  "value": "45.95",
+                  "currencyCode": "USD"
+                },
+                "totalFare": {
+                  "value": "352.00",
+                  "currencyCode": "USD"
+                },
+                "accrualPoints": null,
+                "fareType": "NONDISCOUNT"
+              },
+              "currencyType": "REVENUE",
+              "segmentFareDetails": [
+                {
+                  "fareFamily": "WGA",
+                  "bookingCode": "W",
+                  "fareBasisCode": "WLA7PNRO",
+                  "seatsAvailable": 7,
+                  "segmentIdentifier": "WN5181LGBLAS20190629"
+                },
+                {
+                  "fareFamily": "WGA",
+                  "bookingCode": "W",
+                  "fareBasisCode": "WLA7PNRO",
+                  "seatsAvailable": 7,
+                  "segmentIdentifier": "WN5104LASTUL20190629"
+                }
+              ]
+            },
+            "total": {
+              "value": "352.00",
+              "currencyCode": "USD"
+            }
+          }
+        ],
+        "itineraryPrice": {
+          "recordType": "FARE",
+          "farePassengerType": "ADULT",
+          "farePricingType": "ADULT",
+          "productIds": [
+            "WGA|ADT|WLA7PNRO,W,LGB,LAS,2019-06-29T10:40-07:00,2019-06-29T11:45-07:00,WN,WN,5181,73W|WLA7PNRO,W,LAS,TUL,2019-06-29T13:10-07:00,2019-06-29T17:45-05:00,WN,WN,5104,73H"
+          ],
+          "fare": {
+            "baseFare": {
+              "value": "306.05",
+              "currencyCode": "USD"
+            },
+            "fareTaxesAndFees": [
+              {
+                "code": "US",
+                "codeDescription": "U.S. Transportation Tax",
+                "type": "LO",
+                "typeDescription": "Local",
+                "amount": {
+                  "value": "22.95",
+                  "currencyCode": "USD"
+                }
+              },
+              {
+                "code": "AY",
+                "codeDescription": "U.S. 9/11 Security Fee",
+                "type": "SE",
+                "typeDescription": "Security",
+                "amount": {
+                  "value": "5.60",
+                  "currencyCode": "USD"
+                }
+              },
+              {
+                "code": "ZP",
+                "codeDescription": "U.S. Flight Segment Tax",
+                "type": "VO",
+                "typeDescription": "Trip",
+                "amount": {
+                  "value": "8.40",
+                  "currencyCode": "USD"
+                }
+              },
+              {
+                "code": "XF",
+                "codeDescription": "U.S. Passenger Facility Chg",
+                "type": null,
+                "typeDescription": "Other Tax Type",
+                "amount": {
+                  "value": "9.00",
+                  "currencyCode": "USD"
+                }
+              }
+            ],
+            "totalTaxesAndFees": {
+              "value": "45.95",
+              "currencyCode": "USD"
+            },
+            "totalFare": {
+              "value": "352.00",
+              "currencyCode": "USD"
+            },
+            "accrualPoints": 1837,
+            "fareType": "NONDISCOUNT"
+          },
+          "itineraryPriceReference": "1"
+        },
+        "pointsTotal": null,
+        "airTotal": {
+          "value": "352.00",
+          "currencyCode": "USD"
+        },
+        "changeItinerary": null,
+        "changeReservationInformation": null,
+        "waivedFare": null,
+        "promocodeNotification": {
+          "discountUsedType": "NONE",
+          "discountRateType": "NONE",
+          "message": null,
+          "code": null,
+          "errors": [],
+          "alerts": []
+        }
+      }
+    ],
+    "lastPriceUpdate": "2019-06-12T14:33:50+08:00"
+  },
+  "ancillaryType": [],
+  "chaseApplied": false,
+  "application": "air-booking",
+  "site": "southwest"
+}
