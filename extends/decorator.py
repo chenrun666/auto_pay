@@ -9,9 +9,6 @@ from common.myexception import NoFlightException, PriceException  # 自定义异
 # 选择目标航班
 def select_flight_wrapper(func):
     def inner(self, *args, **kwargs):
-        # 测试js
-        select_flight_js = 'document.querySelector("#air-booking-fares-0-3 > div.fare-button.fare-button_primary-yellow.select-detail--fare > button").click()'
-        self.driver.execute_script(select_flight_js)
 
         # 点击下一步
         continue_js = 'document.querySelector("#air-booking-product-1").click()'

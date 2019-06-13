@@ -1,6 +1,7 @@
 """
 公用的方法
 """
+import calendar
 from dateutil.parser import parse
 
 
@@ -33,6 +34,137 @@ def parse_passenger_info(passengers_info: list, flight_date: str) -> tuple:
             infant += 1
 
     return infant, adult, senior
+
+
+# 选择目标日历
+def select_flight_date(self, target_date):
+    """
+    选择目标日期
+    :param self: 类的对象
+    :param target_date: 目标日期
+    :return:
+    """
+    # 打开日历
+    self.click(
+        xpath='//*[@resource-id="com.southwestairlines.mobile:id/book_a_flight_depart_date"]'
+    )
+    # 目标月份
+    target_month_index = int(self.dep_date.split("-")[1])
+    target_month_eng = calendar.month_name[target_month_index].lower()
+    # 获取目标天的索引值
+    target_day_index = [i
+                        for i in calendar.Calendar().itermonthdays(year=2019, month=target_month_index)
+                        ].index(int(self.dep_date.split("-")[2]))
+    while 1:
+        page_month = self.get_text(
+            xpath='//*[@resource-id="com.southwestairlines.mobile:id/month_title"]'
+        ).split()[0].lower()
+        if target_month_eng == page_month:
+            # 选择天
+            self.click(
+                xpath=f'//*[@resource-id="com.southwestairlines.mobile:id/month_title"]/following-sibling::*[@resource-id="com.southwestairlines.mobile:id/month_grid"]/android.widget.FrameLayout[{target_day_index + 2}]'
+            )
+            self.click(
+                xpath='//*[@resource-id="com.southwestairlines.mobile:id/action_done"]'
+            )
+            break
+        # 滑动屏幕
+        self.swipe(
+            distance=700
+        )
+
+
+# 选择乘机人数
+def select_passengers(self):
+    """
+    选择乘机人数
+    :param self:
+    :param adult: 成年人
+    :param senior: 老年人
+    :return:
+    """
+    for _ in range(self.adult - 1):
+        self.click(
+            xpath='//*[@ resource-id="com.southwestairlines.mobile:id/book_a_flight_increment_passengers_button"]'
+        )
+    # 添加老年人
+    if self.senior:
+        self.click(
+            xpath='//*[@resource-id="com.southwestairlines.mobile:id/book_a_flight_add_senior_fare_section_text"]'
+        )
+        for _ in range(self.senior - 1):
+            self.click(
+                xpath='//*[@resource-id="com.southwestairlines.mobile:id/book_a_flight_increment_seniors_button"]'
+            )
+
+
+# 选择乘客的生日
+def select_birthday(self, birth_year, birth_month, birth_day):
+    """选择乘客的生日"""
+    if birth_year >= 1970:
+        direction = "UP"
+    else:
+        direction = "DOWN"
+
+    flag = False
+
+    while 1:
+        all_years_obj = self.get_obj_list(
+            xpath='//*[@resource-id="android:id/text1"]'
+        )
+        for item in all_years_obj:
+            if item.text == str(birth_year):
+                item.click()
+                flag = True
+                break
+        else:
+            self.swipe(
+                distance=500,
+                direction=direction
+            )
+        if flag:
+            break
+
+    # 选择对应的月份
+    if birth_month >= 7:
+        # 向左滑动
+        direction = "RIGHT"
+    else:
+        direction = "LEFT"
+    for _ in range(birth_month - 1):
+        self.swipe(
+            distance=700,
+            direction=direction,
+            duration=500
+        )
+    self.click(
+        xpath=f'//*[@resource-id="android:id/month_view"]/android.view.View[{birth_day}]'
+    )
+    # 点击确定
+    self.click(
+        xpath='//*[@resource-id="android:id/button1"]'
+    )
+
+
+# 选择乘客性别
+def select_gender(self, gender):
+    """选择乘客性别"""
+    gender_map = {
+        "F": "Female",
+        "M": "Male"
+    }
+    self.click(
+        xpath='//*[@resource-id="com.southwestairlines.mobile:id/booking_passenger_gender_picker"]'
+    )
+
+    gender_obj_list = self.get_obj_list(
+        xpath='//*[@resource-id="android:id/text1"]'
+    )
+    for item in gender_obj_list:
+        if item.text == gender_map[gender]:
+            item.click()
+            self.click(xpath='//*[@resource-id="android:id/button1"]')  # 点击OK
+            break
 
 
 if __name__ == '__main__':

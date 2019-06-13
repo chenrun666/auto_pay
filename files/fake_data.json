@@ -15,7 +15,7 @@
   "arrCity": "TUL",
   "depDate": "2019-06-29",
   "arrDate": null,
-  "depFlightNumber": "WN5181/WN5104",
+  "depFlightNumber": "WN1969/WN3503",
   "arrFlightNumber": null,
   "tripType": 1,
   "runWay": 1,
@@ -44,7 +44,7 @@
       "payTaskId": null,
       "name": "ZHU/YAO",
       "sex": "F",
-      "birthday": "1993-10-04",
+      "birthday": "1993-10-05",
       "nationality": "CN",
       "cardNum": "E37931421",
       "cardExpired": "20241027",
@@ -75,7 +75,7 @@
   },
   "contactVO": {
     "airline": "JW",
-    "linkEmail": "xiangcaohangkong@163.com",
+    "linkEmail": "wnsouthwest@163.com",
     "linkEmailPassword": "xiangcaohangkong@163.com",
     "linkPhone": "17710407835",
     "contactName": "ZHU/YAO"

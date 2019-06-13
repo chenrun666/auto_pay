@@ -1,8 +1,17 @@
 DEBUG = True
 
-MODE = "mobile"
-# MODE = "web"
+# MODE = "mobile"
+MODE = "web"
 # MODE = "POST"
+
+
+# 手机配置
+PLATFORM = "Android"
+DEVICE_NAME = "983a9da7"
+APP_PACKAGE = "com.southwestairlines.mobile"
+APP_ACTIVITY = 'com.southwestairlines.mobile.splash.SplashActivity'
+TIMEOUT = 30
+DRIVER_SERVER = 'http://localhost:4723/wd/hub'
 
 PROXY = True
 
