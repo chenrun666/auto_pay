@@ -73,38 +73,51 @@ def search_flight_wrapper(func):
 # 选择任务对应的航班
 def select_flight_wrapper(func):
     def inner(self, *args, **kwargs):
-        all_slifht_obj_list = self.get_obj_list(
-            xpath='//*[@resource-id="com.southwestairlines.mobile:id/flight_search_results_list"]/android.widget.FrameLayout'
-        )
-        for item in all_slifht_obj_list:
-            item.click()
-            # 获取页面航班号
-            page_flight_obj = self.get_obj_list(
-                xpath=xpath_templ.format("com.southwestairlines.mobile:id/flight_number")
-            )[0]
-            page_flight_num = page_flight_obj.text
-            if "/".join([item[2:] for item in self.dep_flight_number.split("/")]) == page_flight_num:
-                # 选择最低价格
-                all_grade = [
-                    "wanna_get_away_price_effective",
-                    "anytime_price_effective",
-                    "business_select_price_effective"
-                ]
-                for item in all_grade:
-                    current_price_obj = self.get_obj_list(
-                        xpath=xpath_templ.format(f"com.southwestairlines.mobile:id/{item}")
-                    )[0]
-                    if current_price_obj.text.lower() == "sold out":
-                        continue
-                    else:
-                        current_price_obj.click()
-                        func(self)
-                        return
-                else:
-                    raise NoFlightException("航班卖完了。购买失败")
+        flag = False
+        while 1:
+            all_slifht_obj_list = self.get_obj_list(
+                xpath='//*[@resource-id="com.southwestairlines.mobile:id/flight_search_results_list"]/android.widget.FrameLayout'
+            )
+            if flag:
+                all_slifht_obj_list.pop(0)
+            for item in all_slifht_obj_list:
+                sold_out = item.find_element_by_xpath(
+                    './/android.widget.TextView[@resource-id="com.southwestairlines.mobile:id/summary_price_effective"]')
+                if "Sold Out" in sold_out.text:
+                    continue
+                item.click()
+                # 获取页面航班号
+                page_flight_obj = self.get_obj_list(
+                    xpath=xpath_templ.format("com.southwestairlines.mobile:id/flight_number")
+                )[0]
+                page_flight_num = page_flight_obj.text
+                if "/".join([item[2:] for item in self.dep_flight_number.split("/")]) == page_flight_num:
+                    # 选择最低价格
+                    all_grade = [
+                        "wanna_get_away_price_effective",
+                        "anytime_price_effective",
+                        "business_select_price_effective"
+                    ]
+                    for item in all_grade:
+                        if item not in self.driver.page_source:
+                            continue
+                        current_price_obj = self.get_obj_list(
+                            xpath=xpath_templ.format(f"com.southwestairlines.mobile:id/{item}")
+                        )[0]
 
-            # 收起价格面板，点击下一个
-            page_flight_obj.click()
+                        if current_price_obj.text.lower() == "sold out":
+                            continue
+                        else:
+                            current_price_obj.click()
+                            func(self)
+                            return
+                    else:
+                        raise NoFlightException("航班卖完了。购买失败")
+
+                # 收起价格面板，点击下一个
+                page_flight_obj.click()
+
+            flag = True
 
     return inner
 
