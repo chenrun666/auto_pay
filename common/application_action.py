@@ -1,3 +1,5 @@
+import time
+
 from appium import webdriver
 
 from selenium.webdriver.common.by import By
@@ -32,12 +34,9 @@ class Action:
         )).click()
 
     def send_keys(self, xpath, content):
-        self.click(
-            xpath=xpath
-        )
-        self.wait.until(EC.presence_of_element_located(
-            (By.XPATH, xpath)
-        )).set_text(content)
+        obj = self.get_obj_list(xpath=xpath)[0]
+        obj.click()
+        obj.set_text(content)
 
     def get_text(self, xpath):
         content = self.wait.until(EC.presence_of_element_located(

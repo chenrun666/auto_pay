@@ -11,6 +11,7 @@ from utils.utils import parse_passenger_info
 from extends.application_decorator import login_wrapper, search_flight_wrapper, select_flight_wrapper
 from extends.application_decorator import check_flight_info_wrapper
 from extends.application_decorator import fill_passengers_info_wrapper, fill_contact_info_wrapper
+from extends.application_decorator import fill_payment_info_wrapper, fill_bill_info_wrapper
 
 
 class WN(Action):
@@ -65,6 +66,16 @@ class WN(Action):
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/passengers_continue"]'
         )
 
+    @fill_payment_info_wrapper
+    @fill_bill_info_wrapper
+    def payment_info(self):
+        """填写支付信息进行购买"""
+        pass
+
+    def payment(self):
+        """点击购买"""
+        pass
+
     def main(self):
         try:
             self.login()
@@ -72,6 +83,8 @@ class WN(Action):
             self.select_flight()
             self.check_selected_info()
             self.fill_info()
+            self.payment_info()
+            self.payment()
         except Exception as e:
             print(e)
         finally:
