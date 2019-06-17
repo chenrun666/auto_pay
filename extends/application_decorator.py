@@ -73,18 +73,21 @@ def search_flight_wrapper(func):
 # 选择任务对应的航班
 def select_flight_wrapper(func):
     def inner(self, *args, **kwargs):
-        flag = False
         while 1:
             all_slifht_obj_list = self.get_obj_list(
                 xpath='//*[@resource-id="com.southwestairlines.mobile:id/flight_search_results_list"]/android.widget.FrameLayout'
             )
-            if flag:
-                all_slifht_obj_list.pop(0)
-            for item in all_slifht_obj_list:
-                sold_out = item.find_element_by_xpath(
-                    './/android.widget.TextView[@resource-id="com.southwestairlines.mobile:id/summary_price_effective"]')
-                if "Sold Out" in sold_out.text:
-                    continue
+
+            for item in all_slifht_obj_list[1:]:
+                try:
+                    sold_out = item.find_elements_by_xpath(
+                        './/android.widget.TextView[@resource-id="com.southwestairlines.mobile:id/summary_price_effective"]')
+                    if not sold_out:
+                        continue
+                    if "Sold Out" in sold_out[0].text:
+                        continue
+                except Exception:
+                    pass
                 item.click()
                 # 获取页面航班号
                 page_flight_obj = self.get_obj_list(
@@ -116,8 +119,6 @@ def select_flight_wrapper(func):
 
                 # 收起价格面板，点击下一个
                 page_flight_obj.click()
-
-            flag = True
 
     return inner
 

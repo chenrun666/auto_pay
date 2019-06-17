@@ -19,7 +19,7 @@ class Action:
             'appActivity': APP_ACTIVITY,
             'noReset': True,
             # 隐藏键盘
-            # 'unicodeKeyboard': True,
+            'unicodeKeyboard': True,
             'resetKeyboard': True,
             'newCommandTime': 120,
             "automationName": 'UiAutomator2'
