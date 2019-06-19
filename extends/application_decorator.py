@@ -126,6 +126,43 @@ def select_flight_wrapper(func):
 # 校验选择的信息
 def check_flight_info_wrapper(func):
     def inner(self, *args, **kwargs):
+        # 检测选择的航班是否正确
+        flight_num_info = self.dep_flight_number.split("/")
+        if len(flight_num_info) > 1:
+            flight_first_num = flight_num_info[0][2:]
+            flight_second_flight = flight_num_info[1][2]
+        else:
+            flight_first_num = flight_num_info[0][2:]
+            flight_second_flight = None
+
+        if flight_second_flight:
+            page_flight_first_num = self.get_text(
+                xpath=xpath_templ.format('com.southwestairlines.mobile:id/reservation_view_card_flight_number')
+            )
+            page_flight_second_num = self.get_text(
+                xpath=xpath_templ.format(
+                    'com.southwestairlines.mobile:id/reservation_view_card_secondary_flight_number')
+            )
+            if flight_first_num != page_flight_first_num and flight_second_flight != page_flight_second_num:
+                raise NoFlightException("航班选择错误，中断程序")
+
+        else:
+            page_flight_first_num = self.get_text(
+                xpath=xpath_templ.format('com.southwestairlines.mobile:id/reservation_view_card_flight_number')
+            )
+            if flight_first_num != page_flight_first_num:
+                raise NoFlightException("航班选择错误, 中断程序")
+
+        # 检测出发地和目的地是否选择正确
+        start = self.get_text(
+            xpath=xpath_templ.format("com.southwestairlines.mobile:id/reservation_view_card_departure_airport_code")
+        )
+        end = self.get_text(
+            xpath=xpath_templ.format("com.southwestairlines.mobile:id/reservation_view_card_arrival_airport_code")
+        )
+        if start != self.dep_airport or end != self.arr_airport:
+            raise NoFlightException("出发地和目的地选择错误，中断执行")
+
         func(self)
 
     return inner
@@ -134,7 +171,7 @@ def check_flight_info_wrapper(func):
 # 填写乘客信息
 def fill_passengers_info_wrapper(func):
     def inner(self, *args, **kwargs):
-        for item in self.passenger_list:
+        for index, item in enumerate(self.passenger_list):
             last_name, first_name = item["name"].split("/")
             birth_year, birth_month, birth_day = [int(i) for i in item["birthday"].split("-")]
             self.send_keys(
@@ -155,6 +192,52 @@ def fill_passengers_info_wrapper(func):
             select_birthday(self, birth_year, birth_month, birth_day)
             # 选择性别
             select_gender(self, item["sex"])
+
+            if index == 0:
+                self.swipe(
+                    distance=1000
+                )
+
+                # 第一个乘客填写联系人信息
+                self.click(
+                    xpath=xpath_templ.format("com.southwestairlines.mobile:id/booking_passenger_contact_method")
+                )
+
+                self.click(
+                    xpath=xpath_templ.format("com.southwestairlines.mobile:id/contact_method_email_layout")
+                )
+
+                self.send_keys(
+                    xpath='//android.widget.EditText',
+                    content=self.contact["linkEmail"]
+                )
+
+                self.click(
+                    xpath='//android.widget.EditText'
+                )
+
+                # 打对勾
+                self.click(
+                    xpath=xpath_templ.format("com.southwestairlines.mobile:id/action_done")
+                )
+
+                # receipt_obj = self.get_obj_list(
+                #     xpath='//android.widget.EditText[@text="Email Receipt To"]'
+                # )[0]
+                # receipt_obj.set_text(self.contact["linkEmail"])
+                self.send_keys(
+                    xpath='//android.widget.EditText[@text="Email Receipt To"]',
+                    content=self.contact["linkEmail"]
+                )
+
+            # 点击下一个乘客
+            if index < len(self.passenger_list) - 1:
+                self.click(
+                    xpath=xpath_templ.format('com.southwestairlines.mobile:id/passengers_continue')
+                )
+
+            # 点击空白处，延长交互时间
+            _ = self.driver.page_source
 
         func(self)
 

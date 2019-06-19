@@ -2,6 +2,8 @@
 公用的方法
 """
 import calendar
+import time
+
 from dateutil.parser import parse
 
 
@@ -109,8 +111,9 @@ def select_birthday(self, birth_year, birth_month, birth_day):
     flag = False
 
     while 1:
+
         all_years_obj = self.get_obj_list(
-            xpath='//*[@resource-id="android:id/text1"]'
+            xpath='//*[@resource-id="android:id/date_picker_year_picker"]/android.widget.TextView'
         )
         for item in all_years_obj:
             if item.text == str(birth_year):
@@ -119,7 +122,7 @@ def select_birthday(self, birth_year, birth_month, birth_day):
                 break
         else:
             self.swipe(
-                distance=500,
+                distance=700,
                 direction=direction
             )
         if flag:
@@ -128,14 +131,17 @@ def select_birthday(self, birth_year, birth_month, birth_day):
     # 选择对应的月份
     if birth_month >= 7:
         # 向左滑动
-        direction = "RIGHT"
+        direction = "next"
     else:
-        direction = "LEFT"
+        direction = "prev"
     for _ in range(birth_month - 1):
-        self.swipe(
-            distance=700,
-            direction=direction,
-            duration=500
+        # self.swipe(
+        #     distance=700,
+        #     direction=direction,
+        #     duration=500
+        # )
+        self.click(
+            xpath=f'//*[@resource-id="android:id/{direction}"]'
         )
     self.click(
         xpath=f'//*[@resource-id="android:id/month_view"]/android.view.View[{birth_day}]'

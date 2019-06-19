@@ -59,9 +59,12 @@ class WN(Action):
         )
 
     @fill_passengers_info_wrapper
-    @fill_contact_info_wrapper
+    # @fill_contact_info_wrapper
     def fill_info(self):
         """填写所有信息"""
+        self.swipe(
+            distance=500
+        )
         self.click(
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/passengers_continue"]'
         )

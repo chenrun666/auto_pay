@@ -13,7 +13,7 @@ def search_flight_wrapper(func):
 
 
         # 点击单程
-        self.click_btn(
+        self.click(
             xpath='//ul[@class="nav nav--justified"]/li[2]'
         )
 

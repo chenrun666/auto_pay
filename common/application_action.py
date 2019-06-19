@@ -11,7 +11,7 @@ from conf.settings import PLATFORM, DEVICE_NAME, APP_PACKAGE, APP_ACTIVITY, DRIV
 
 
 class Action:
-    def __init__(self):
+    def __init__(self, url=None):
         self.desired_caps = {
             'platformName': PLATFORM,
             'deviceName': DEVICE_NAME,
@@ -21,12 +21,17 @@ class Action:
             # 隐藏键盘
             'unicodeKeyboard': True,
             'resetKeyboard': True,
-            'newCommandTime': 120,
-            "automationName": 'UiAutomator2'
+            'newCommandTimeout': 5000,
+            'adbExecTimeout': 50000,
+            # 'avdReadyTimeout': '300000',
+            "automationName": 'UiAutomator2'  # UiAutomator2
         }
 
         self.driver = webdriver.Remote(DRIVER_SERVER, self.desired_caps)
         self.wait = WebDriverWait(self.driver, TIMEOUT)
+
+        if url:
+            self.driver.get(url)
 
     def click(self, xpath):
         self.wait.until(EC.presence_of_element_located(
@@ -75,6 +80,7 @@ class Action:
             end_y = start_y + distance
 
         self.driver.swipe(start_x, start_y, end_x, end_y, duration)
+        time.sleep(0.5)
 
     def get_obj_list(self, xpath):
         obj_list = self.wait.until(EC.presence_of_all_elements_located(
