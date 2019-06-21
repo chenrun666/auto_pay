@@ -21,3 +21,8 @@ class SearchException(Exception):
 class PostDataEception(Exception):
     def __init__(self, msg):
         self.msg = msg
+
+
+class PnrException(Exception):
+    def __init__(self, msg):
+        self.msg = msg

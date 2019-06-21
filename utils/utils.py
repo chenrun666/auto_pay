@@ -6,6 +6,8 @@ import time
 
 from dateutil.parser import parse
 
+from selenium.common.exceptions import NoSuchElementException
+
 
 def parse_passenger_info(passengers_info: list, flight_date: str) -> tuple:
     """
@@ -63,16 +65,23 @@ def select_flight_date(self, target_date):
         ).split()[0].lower()
         if target_month_eng == page_month:
             # 选择天
-            self.click(
-                xpath=f'//*[@resource-id="com.southwestairlines.mobile:id/month_title"]/following-sibling::*[@resource-id="com.southwestairlines.mobile:id/month_grid"]/android.widget.FrameLayout[{target_day_index + 2}]'
-            )
+            for _ in range(10):
+                try:
+                    self.driver.find_element_by_xpath(
+                        xpath=f'//*[@resource-id="com.southwestairlines.mobile:id/month_title"]/following-sibling::*[@resource-id="com.southwestairlines.mobile:id/month_grid"]/android.widget.FrameLayout[{target_day_index + 2}]'
+                    ).click()
+                    break
+                except NoSuchElementException:
+                    self.swipe(
+                        distance=150
+                    )
             self.click(
                 xpath='//*[@resource-id="com.southwestairlines.mobile:id/action_done"]'
             )
             break
         # 滑动屏幕
         self.swipe(
-            distance=700
+            distance=500
         )
 
 
@@ -122,26 +131,16 @@ def select_birthday(self, birth_year, birth_month, birth_day):
                 break
         else:
             self.swipe(
-                distance=700,
+                distance=400,
                 direction=direction
             )
         if flag:
             break
 
     # 选择对应的月份
-    if birth_month >= 7:
-        # 向左滑动
-        direction = "next"
-    else:
-        direction = "prev"
     for _ in range(birth_month - 1):
-        # self.swipe(
-        #     distance=700,
-        #     direction=direction,
-        #     duration=500
-        # )
         self.click(
-            xpath=f'//*[@resource-id="android:id/{direction}"]'
+            xpath=f'//*[@resource-id="android:id/next"]'
         )
     self.click(
         xpath=f'//*[@resource-id="android:id/month_view"]/android.view.View[{birth_day}]'

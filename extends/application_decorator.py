@@ -3,7 +3,7 @@ import calendar
 
 from utils.utils import select_flight_date, select_passengers, select_birthday, select_gender
 
-from common.myexception import NoFlightException
+from common.myexception import NoFlightException, PriceException, StopException, PnrException
 
 xpath_templ = '//*[@resource-id="{}"]'
 
@@ -78,7 +78,7 @@ def select_flight_wrapper(func):
                 xpath='//*[@resource-id="com.southwestairlines.mobile:id/flight_search_results_list"]/android.widget.FrameLayout'
             )
 
-            for item in all_slifht_obj_list[1:]:
+            for item in all_slifht_obj_list:
                 try:
                     sold_out = item.find_elements_by_xpath(
                         './/android.widget.TextView[@resource-id="com.southwestairlines.mobile:id/summary_price_effective"]')
@@ -112,6 +112,19 @@ def select_flight_wrapper(func):
                             continue
                         else:
                             current_price_obj.click()
+                            if self.senior:
+                                # 重新获取价格
+                                for item in all_grade:
+                                    if item not in self.driver.page_source:
+                                        continue
+                                    current_price_obj = self.get_obj_list(
+                                        xpath=xpath_templ.format(f"com.southwestairlines.mobile:id/{item}")
+                                    )[0]
+                                    if current_price_obj.text.lower() == "sold out":
+                                        continue
+                                    else:
+                                        current_price_obj.click()
+                                        break
                             func(self)
                             return
                     else:
@@ -168,6 +181,27 @@ def check_flight_info_wrapper(func):
     return inner
 
 
+# 校验价格
+def check_flight_price_wrapper(func):
+    def inner(self, *args, **kwargs):
+        # 滑动到总价格
+        self.swipe(
+            distance=500
+        )
+
+        # 获取页面总价格
+        page_total_price = self.get_text(
+            xpath='//*[@resource-id="com.southwestairlines.mobile:id/money_total_value"]'
+        )[1:].replace(",", "")
+
+        if float(page_total_price) > self.target_price:
+            raise PriceException("页面价格大于任务目标价格。")
+
+        func(self)
+
+    return inner
+
+
 # 填写乘客信息
 def fill_passengers_info_wrapper(func):
     def inner(self, *args, **kwargs):
@@ -192,11 +226,13 @@ def fill_passengers_info_wrapper(func):
             select_birthday(self, birth_year, birth_month, birth_day)
             # 选择性别
             select_gender(self, item["sex"])
+            time.sleep(1)
 
             if index == 0:
-                self.swipe(
-                    distance=1000
-                )
+                for _ in range(2):
+                    self.swipe(
+                        distance=400
+                    )
 
                 # 第一个乘客填写联系人信息
                 self.click(
@@ -232,12 +268,62 @@ def fill_passengers_info_wrapper(func):
 
             # 点击下一个乘客
             if index < len(self.passenger_list) - 1:
+                for _ in range(2):
+                    self.swipe(
+                        distance=300
+                    )
                 self.click(
                     xpath=xpath_templ.format('com.southwestairlines.mobile:id/passengers_continue')
                 )
 
-            # 点击空白处，延长交互时间
-            _ = self.driver.page_source
+        func(self)
+
+    return inner
+
+
+# 校验乘客信息是否正确
+def check_passengers_info_wrapper(func):
+    def inner(self, *args, **kwargs):
+        # 获取所有的乘客列表
+
+        for index in range(len(self.passenger_list)):
+            self.click(
+                xpath=f'//*[@resource-id="com.southwestairlines.mobile:id/passenger_preview_passengers_booking"]/android.widget.LinearLayout[{index + 1}]'
+            )
+            # 点开每个乘客的填写信息。进行校验
+            # 获取页面的乘客详细信息
+            page_first_name = self.get_text(
+                xpath='//*[@resource-id="com.southwestairlines.mobile:id/booking_passenger_firstname"]//android.widget.EditText'
+            )
+            page_last_name = self.get_text(
+                xpath='//*[@resource-id="com.southwestairlines.mobile:id/booking_passenger_lastname"]//android.widget.EditText'
+            )
+
+            # 获取对应任务中的乘客信息
+            if f"{page_last_name}/{page_first_name}" != self.passenger_list[index]["name"]:
+                raise StopException("乘客信息填写错误(姓名填写错误)，终止购买")
+
+            # 获取乘客的生日
+            page_birth = self.get_text(
+                xpath='//*[@resource-id="com.southwestairlines.mobile:id/booking_passenger_dob_picker_edittext"]'
+            )
+            target_birth_list = [i[-2:] for i in self.passenger_list[index]["birthday"].split("-")]
+            target_birth = f"{target_birth_list[1]}/{target_birth_list[2]}/{target_birth_list[0]}"
+
+            if page_birth != target_birth:
+                raise StopException("乘客信息填写错误(生日选择错误)，终止购买")
+
+            # 获取性别
+            page_gender = self.get_text(
+                xpath='//*[@resource-id="com.southwestairlines.mobile:id/booking_passenger_gender_picker_edittext"]'
+            )[0].upper()
+
+            if page_gender != self.passenger_list[index]["sex"].upper():
+                raise StopException("乘客信息选择错误(性别选择错误), 终止购买")
+
+            self.click(
+                xpath='//*[@resource-id="com.southwestairlines.mobile:id/action_done"]'
+            )
 
         func(self)
 
@@ -287,6 +373,11 @@ def fill_contact_info_wrapper(func):
 # 填写支付信息
 def fill_payment_info_wrapper(func):
     def inner(self, *args, **kwargs):
+        time.sleep(2)
+        for _ in range(len(self.passenger_list)):
+            self.swipe(
+                distance=200
+            )
         self.click(
             xpath=xpath_templ.format("com.southwestairlines.mobile:id/booking_review_payment_method")
         )
@@ -302,6 +393,9 @@ def fill_payment_info_wrapper(func):
         self.send_keys(
             xpath=xpath_templ.format("com.southwestairlines.mobile:id/billinginfo_card_number_edit_text"),
             content=card_info["cardNumber"]
+        )
+        self.click(
+            xpath=xpath_templ.format("com.southwestairlines.mobile:id/billinginfo_card_security_code_edit_text")
         )
         # CVV
         self.send_keys(
@@ -349,9 +443,10 @@ def fill_payment_info_wrapper(func):
 def fill_bill_info_wrapper(func):
     def inner(self, *args, **kwargs):
         # 填写账单地址信息
-        self.swipe(
-            distance=800
-        )
+        for _ in range(2):
+            self.swipe(
+                distance=400
+            )
         # 选择国家
         self.click(
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/billinginfo_country"]'
@@ -367,7 +462,7 @@ def fill_bill_info_wrapper(func):
                     break
             else:
                 self.swipe(
-                    distance=1000
+                    distance=500
                 )
             if flag:
                 break
@@ -399,7 +494,7 @@ def fill_bill_info_wrapper(func):
 
         self.get_obj_list(
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/billinginfo_phone"]//android.widget.EditText'
-        )[0].set_text("17610780919")
+        )[0].set_text("17710407835")
         self.get_obj_list(
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/billinginfo_phone"]//android.widget.EditText'
         )[0].click()
@@ -412,6 +507,31 @@ def fill_bill_info_wrapper(func):
         self.click(
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/action_done"]'
         )
+
+        func(self)
+
+    return inner
+
+
+# 支付的装饰器
+def payment_wrapper(func):
+    def inner(self, *args, **kwargs):
+        self.swipe(
+            distance=500
+        )
+        self.click(
+            xpath='//*[@resource-id="com.southwestairlines.mobile:id/payment_continue"]'
+        )
+
+        # 获取pnr
+        try:
+            pnr = self.get_text(
+                xpath='//*[@resource-id="com.southwestairlines.mobile:id/confirmation_number"]'
+            )
+            self.back_fill["pnr"] = pnr
+            self.back_fill["status"] = 450
+        except Exception:
+            raise PnrException("获取票号失败")
 
         func(self)
 

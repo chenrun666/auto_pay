@@ -30,26 +30,30 @@ class Action(object):
             if BROWSER == "chrome":
                 # 添加代理
                 chromeOptions = webdriver.ChromeOptions()
-                chromeOptions.add_experimental_option('excludeSwitches', ['enable-automation'])
-                chromeOptions.add_argument("--proxy-server=http://127.0.0.1:8080")
+                chromeOptions.add_experimental_option('debuggerAddress', '18.179.200.244:9222')
+                # chromeOptions.add_experimental_option('excludeSwitches', ['enable-automation'])
+                # chromeOptions.add_argument("--proxy-server=http://127.0.0.1:8080")
                 # self.driver = webdriver.Chrome(chrome_options=chromeOptions, executable_path=CHROMEPATH)
                 self.driver = webdriver.Chrome(options=chromeOptions)
 
-                js = "Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});"
-                self.driver.execute_script(js)
+                # js = "Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});"
+                # self.driver.execute_script(js)
 
             elif BROWSER == "firefox":
                 # window  C:\Users\Administrator\AppData\Roaming\Mozilla\Firefox\Profiles\v4gtopon.default
                 # profile_directory = "/Users/chenrun/Library/Application Support/Firefox/Profiles/3y3i8wyv.default"
                 # profile = webdriver.FirefoxProfile(profile_directory)
                 profile = webdriver.FirefoxProfile()
-                profile.set_preference('network.proxy.type', 1)
-                profile.set_preference('network.proxy.http', '127.0.0.1')
-                profile.set_preference('network.proxy.http_port', 8080)
-                profile.set_preference('network.proxy.ssl', '127.0.0.1')
-                profile.set_preference('network.proxy.ssl_port', 8080)
+                # profile.set_preference('network.proxy.type', 1)
+                # profile.set_preference('network.proxy.http', '127.0.0.1')
+                # profile.set_preference('network.proxy.http_port', 8080)
+                # profile.set_preference('network.proxy.ssl', '127.0.0.1')
+                # profile.set_preference('network.proxy.ssl_port', 8080)
                 # profile.update_preferences()
                 self.driver = webdriver.Firefox(profile)
+                # js = "Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});"
+                # self.driver.execute_script(js)
+
                 # self.driver = webdriver.Firefox()
             # self.driver = webdriver.Firefox()
             # self.driver = webdriver.PhantomJS()

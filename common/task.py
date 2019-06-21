@@ -22,11 +22,11 @@ def get_task():
     }
     while True:
         try:
-            #  http://47.92.234.181:18008/book?carrier=JW&machineCode={data['machineCode']}
-            # taskJson = requests.post(f"http://47.92.119.88:18002/getBookingPayTask",
-            #                          data=json.dumps(data), headers=taskheaders)
-            taskJson = requests.get(f"http://47.92.234.181:18008/book?carrier=WN&machineCode=127.0.0.1",
-                                    data=json.dumps(data), headers=taskheaders)
+             # http://47.92.234.181:18008/book?carrier=JW&machineCode={data['machineCode']}
+            taskJson = requests.post(f"http://47.92.119.88:18002/getBookingPayTask",
+                                     data=json.dumps(data), headers=taskheaders)
+            # taskJson = requests.get(f"http://47.92.234.181:18008/book?carrier=WN&machineCode=127.0.0.1",
+            #                         data=json.dumps(data), headers=taskheaders)
 
             if taskJson.json()["data"]:
                 logger.info(f"获取到任务：{taskJson.json()['data']}")
@@ -53,4 +53,4 @@ def back_fill(data):
 
 
 if __name__ == '__main__':
-    pass
+    get_task()
