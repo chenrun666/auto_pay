@@ -3,16 +3,17 @@ import json
 
 from common.log import logger
 from common.myexception import *
-from conf.settings import RESULT
 from common.application_action import Action
+
+from conf.settings import RESULT
 
 from utils.utils import parse_passenger_info
 
-from extends.application_decorator import login_wrapper, search_flight_wrapper, select_flight_wrapper
+from extends.application_decorator import payment_wrapper
+from extends.application_decorator import fill_payment_info_wrapper, fill_bill_info_wrapper
 from extends.application_decorator import check_flight_info_wrapper, check_flight_price_wrapper
 from extends.application_decorator import fill_passengers_info_wrapper, check_passengers_info_wrapper
-from extends.application_decorator import fill_payment_info_wrapper, fill_bill_info_wrapper
-from extends.application_decorator import payment_wrapper
+from extends.application_decorator import login_wrapper, search_flight_wrapper, select_flight_wrapper
 
 
 class WN(Action):
@@ -36,10 +37,12 @@ class WN(Action):
 
         # 乘客信息
         self.passenger_list = task["passengerVOList"]
-        infant, self.adult, self.senior = parse_passenger_info(self.passenger_list, self.dep_date)
+        # infant, self.adult, self.senior = parse_passenger_info(self.passenger_list, self.dep_date)
+        infant, self.adult, self.senior = 0, len(self.passenger_list), 0
 
         # 组织回填数据
         self.back_fill = copy.deepcopy(RESULT)
+        self.back_fill["payTaskId"] = task["pnrVO"]["payTaskId"]
         self.back_fill["linkEmail"] = self.contact["linkEmail"]
         self.back_fill["linkEmailPassword"] = self.contact["linkEmailPassword"]
         self.back_fill["linkPhone"] = self.contact["linkPhone"]
@@ -124,7 +127,7 @@ class WN(Action):
         except Exception as e:
             self.back_fill["status"] = 250
             self.back_fill["msg"] = str(e)
-            logger.error(e)
+            logger.exception(e)
         finally:
             self.driver.close_app()
 

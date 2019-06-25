@@ -236,7 +236,6 @@ class Action(object):
         elif len(s) == 1:
             return True
         else:
-            print("找到%s个元素：%s", len(s), xpath)
             return False
 
     def close(self):

@@ -29,7 +29,7 @@ def get_task():
             #                         data=json.dumps(data), headers=taskheaders)
 
             if taskJson.json()["data"]:
-                logger.info(f"获取到任务：{taskJson.json()['data']}")
+                logger.info(f"获取到任务：{json.dumps(taskJson.json()['data'])}")
                 return taskJson.json()["data"]
             else:
                 print(taskJson.json(), type(taskJson.json()))

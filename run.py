@@ -1,8 +1,10 @@
-from support.payment import *
+from common.task import get_task, back_fill
+from support.application_payment import *
 
 if __name__ == '__main__':
-    if DEBUG:
-        with open("../files/fake_data.json", "r", encoding="utf-8") as f:
-            fake_task = f.read()
-        wn = WN(json.loads(fake_task))
-        wn.main()
+    task = get_task()
+
+    wn = WN(task)
+    result = wn.main()
+
+    back_fill(result)

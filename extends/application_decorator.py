@@ -42,9 +42,10 @@ def search_flight_wrapper(func):
             content=self.dep_airport
         )
         # 选择航班
-        self.click(
-            xpath='//*[@resource-id="com.southwestairlines.mobile:id/airport_list_fast_scroller"]/android.widget.LinearLayout[2]'
-        )
+        # 获取三字字码相关的列
+        self.get_obj_list(
+            xpath=f'//*[contains(@text, "{self.dep_airport}")]'
+        )[1].click()
 
         # 选择到达地，点击to
         self.click(
@@ -56,9 +57,9 @@ def search_flight_wrapper(func):
             content=self.arr_airport
         )
         # 选择航班
-        self.click(
-            xpath='//*[@resource-id="com.southwestairlines.mobile:id/airport_list_fast_scroller"]/android.widget.LinearLayout[2]'
-        )
+        self.get_obj_list(
+            xpath=f'//*[contains(@text, "{self.arr_airport}")]'
+        )[1].click()
 
         # 选择日期
         select_flight_date(self, self.dep_airport)
@@ -194,7 +195,10 @@ def check_flight_price_wrapper(func):
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/money_total_value"]'
         )[1:].replace(",", "")
 
-        if float(page_total_price) > self.target_price:
+        # 回填支付总价格
+        self.back_fill["price"] = page_total_price
+
+        if float(page_total_price) > self.target_price * len(self.passenger_list):
             raise PriceException("页面价格大于任务目标价格。")
 
         func(self)
@@ -411,7 +415,11 @@ def fill_payment_info_wrapper(func):
         self.click(
             xpath=xpath_templ.format("android:id/text1")
         )
-        card_expired_year, card_expired_month = card_info["cardExpired"].split("-")
+        expired_info = card_info["cardExpired"].split("-")
+        if len(expired_info) > 2:
+            card_expired_year, card_expired_month, _ = expired_info
+        else:
+            card_expired_year, card_expired_month = expired_info
         self.click(
             xpath=f'//android.widget.CheckedTextView[@text="{int(card_expired_month)}-{calendar.month_name[int(card_expired_month)]}"]'
         )
@@ -516,6 +524,7 @@ def fill_bill_info_wrapper(func):
 # 支付的装饰器
 def payment_wrapper(func):
     def inner(self, *args, **kwargs):
+        time.sleep(5)
         self.swipe(
             distance=500
         )
