@@ -2,9 +2,10 @@ from common.task import get_task, back_fill
 from support.application_payment import *
 
 if __name__ == '__main__':
-    task = get_task()
+    while 1:
+        task = get_task()
 
-    wn = WN(task)
-    result = wn.main()
+        wn = WN(task)
+        result = wn.main()
 
-    back_fill(result)
+        back_fill(result)

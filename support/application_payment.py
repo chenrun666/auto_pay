@@ -15,6 +15,9 @@ from extends.application_decorator import check_flight_info_wrapper, check_fligh
 from extends.application_decorator import fill_passengers_info_wrapper, check_passengers_info_wrapper
 from extends.application_decorator import login_wrapper, search_flight_wrapper, select_flight_wrapper
 
+# 更新的wrapper
+from extends.v2.select_flight import select_flight_wrapper
+
 
 class WN(Action):
     def __init__(self, task):
@@ -25,6 +28,7 @@ class WN(Action):
         self.dep_date = task["depDate"]
         self.dep_flight_number = task["depFlightNumber"]
         self.task_flight_price = task["targetPrice"]
+        self.flight_start_time = task["segmentVOList"][0]["depDate"]
 
         # 联系人信息
         self.contact = task["contactVO"]
@@ -41,12 +45,15 @@ class WN(Action):
         infant, self.adult, self.senior = 0, len(self.passenger_list), 0
 
         # 组织回填数据
-        self.back_fill = copy.deepcopy(RESULT)
-        self.back_fill["payTaskId"] = task["pnrVO"]["payTaskId"]
-        self.back_fill["linkEmail"] = self.contact["linkEmail"]
-        self.back_fill["linkEmailPassword"] = self.contact["linkEmailPassword"]
-        self.back_fill["linkPhone"] = self.contact["linkPhone"]
-        self.back_fill["nameList"] = [name["name"] for name in self.passenger_list]
+        # self.back_fill = copy.deepcopy(RESULT)
+        # self.back_fill["payTaskId"] = task["pnrVO"]["payTaskId"]
+        # self.back_fill["linkEmail"] = self.contact["linkEmail"]
+        # self.back_fill["linkEmailPassword"] = self.contact["linkEmailPassword"]
+        # self.back_fill["linkPhone"] = self.contact["linkPhone"]
+        # self.back_fill["nameList"] = [name["name"] for name in self.passenger_list]
+        # self.back_fill["sourceCur"] = task["sourceCurrency"]
+        # self.back_fill["targetCur"] = task["targetCurrency"]
+        self.back_fill = task["pnrVO"]
         self.back_fill["sourceCur"] = task["sourceCurrency"]
         self.back_fill["targetCur"] = task["targetCurrency"]
         super(WN, self).__init__()

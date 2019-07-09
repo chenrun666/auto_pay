@@ -41,6 +41,7 @@ def search_flight_wrapper(func):
             xpath=xpath_templ.format("com.southwestairlines.mobile:id/airport_list_search"),
             content=self.dep_airport
         )
+        time.sleep(2)
         # 选择航班
         # 获取三字字码相关的列
         self.get_obj_list(
@@ -56,6 +57,7 @@ def search_flight_wrapper(func):
             xpath=xpath_templ.format("com.southwestairlines.mobile:id/airport_list_search"),
             content=self.arr_airport
         )
+        time.sleep(2)
         # 选择航班
         self.get_obj_list(
             xpath=f'//*[contains(@text, "{self.arr_airport}")]'
@@ -75,11 +77,11 @@ def search_flight_wrapper(func):
 def select_flight_wrapper(func):
     def inner(self, *args, **kwargs):
         while 1:
-            all_slifht_obj_list = self.get_obj_list(
+            all_flifht_obj_list = self.get_obj_list(
                 xpath='//*[@resource-id="com.southwestairlines.mobile:id/flight_search_results_list"]/android.widget.FrameLayout'
             )
 
-            for item in all_slifht_obj_list:
+            for item in all_flifht_obj_list:
                 try:
                     sold_out = item.find_elements_by_xpath(
                         './/android.widget.TextView[@resource-id="com.southwestairlines.mobile:id/summary_price_effective"]')
@@ -90,6 +92,7 @@ def select_flight_wrapper(func):
                 except Exception:
                     pass
                 item.click()
+                time.sleep(2)
                 # 获取页面航班号
                 page_flight_obj = self.get_obj_list(
                     xpath=xpath_templ.format("com.southwestairlines.mobile:id/flight_number")
@@ -133,6 +136,7 @@ def select_flight_wrapper(func):
 
                 # 收起价格面板，点击下一个
                 page_flight_obj.click()
+                time.sleep(2)
 
     return inner
 
@@ -398,20 +402,21 @@ def fill_payment_info_wrapper(func):
             xpath=xpath_templ.format("com.southwestairlines.mobile:id/billinginfo_card_number_edit_text"),
             content=card_info["cardNumber"]
         )
-        self.click(
-            xpath=xpath_templ.format("com.southwestairlines.mobile:id/billinginfo_card_security_code_edit_text")
-        )
-        # CVV
-        self.send_keys(
-            xpath=xpath_templ.format("com.southwestairlines.mobile:id/billinginfo_card_security_code_edit_text"),
-            content=card_info["cvv"]
-        )
+        if card_info["cvv"].isnumeric():
+            self.click(
+                xpath=xpath_templ.format("com.southwestairlines.mobile:id/billinginfo_card_security_code_edit_text")
+            )
+            # CVV
+            self.send_keys(
+                xpath=xpath_templ.format("com.southwestairlines.mobile:id/billinginfo_card_security_code_edit_text"),
+                content=card_info["cvv"]
+            )
 
         # 选择卡的过期时间
         self.click(
             xpath=xpath_templ.format("com.southwestairlines.mobile:id/billinginfo_card_expiration")
         )
-        # 选择过期的月份
+        # 选择过期的月份 self.driver.swipe(200, 700, 200, 1000, 1000)
         self.click(
             xpath=xpath_templ.format("android:id/text1")
         )
@@ -420,6 +425,10 @@ def fill_payment_info_wrapper(func):
             card_expired_year, card_expired_month, _ = expired_info
         else:
             card_expired_year, card_expired_month = expired_info
+
+        time.sleep(2)
+        if int(card_expired_month) < 4:
+            self.driver.swipe(200, 700, 200, 1000, 1000)
         self.click(
             xpath=f'//android.widget.CheckedTextView[@text="{int(card_expired_month)}-{calendar.month_name[int(card_expired_month)]}"]'
         )
