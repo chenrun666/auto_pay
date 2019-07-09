@@ -181,6 +181,17 @@ def check_flight_info_wrapper(func):
         if start != self.dep_airport or end != self.arr_airport:
             raise NoFlightException("出发地和目的地选择错误，中断执行")
 
+        # 校验航班日期选择是否正确
+        page_flight_date = self.get_text(
+            xpath='//*[@resource-id="com.southwestairlines.mobile:id/reservation_view_card_date"]'
+        )
+        _, month_day, year = [item.strip() for item in page_flight_date.split(",")]
+
+        month, day = month_day.split()
+        if calendar.month_abbr[int(self.dep_date.split("-")[1])] != month or int(day) != int(
+                self.dep_date.split("-")[2]):
+            raise NoFlightException("出发地和目的地选择错误，中断执行")
+
         func(self)
 
     return inner

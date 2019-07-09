@@ -54,22 +54,20 @@ def select_flight_date(self, target_date):
     )
     # 目标月份
     target_month_index = int(self.dep_date.split("-")[1])
-    target_month_eng = calendar.month_name[target_month_index].lower()
+    target_month_eng = calendar.month_name[target_month_index]
     # 获取目标天的索引值
-    target_day_index = [i
-                        for i in calendar.Calendar().itermonthdays(year=2019, month=target_month_index)
-                        ].index(int(self.dep_date.split("-")[2]))
+    target_day_str = int(self.dep_date.split("-")[2])
     while 1:
         page_month = self.get_text(
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/month_title"]'
-        ).split()[0].lower()
+        ).split()[0]
         if target_month_eng == page_month:
             # 选择天
             for _ in range(10):
                 try:
-                    self.driver.find_element_by_xpath(
-                        xpath=f'//*[@resource-id="com.southwestairlines.mobile:id/month_title"]/following-sibling::*[@resource-id="com.southwestairlines.mobile:id/month_grid"]/android.widget.FrameLayout[{target_day_index + 2}]'
-                    ).click()
+                    self.driver.find_elements_by_xpath(
+                        xpath=f'//android.widget.TextView[contains(@text, "{target_month_eng}")]/following-sibling::*[2]//*[contains(@text, "{target_day_str}")]'
+                    )[0].click()
                     break
                 except NoSuchElementException:
                     self.swipe(
@@ -83,6 +81,7 @@ def select_flight_date(self, target_date):
         self.swipe(
             distance=500
         )
+        time.sleep(1)
 
 
 # 选择乘机人数
