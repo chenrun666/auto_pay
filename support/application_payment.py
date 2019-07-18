@@ -115,7 +115,8 @@ class WN(Action):
             self.fill_info()
             self.payment_info()
             self.payment()
-        except SearchException as e:
+
+        except (SearchException, StopException) as e:
             self.back_fill["status"] = 401
             self.back_fill["msg"] = str(e)
             logger.error(e)

@@ -171,6 +171,37 @@ def select_gender(self, gender):
             break
 
 
+# 校验接收邮箱是否正确，如果错误进行多次重写
+def check_receipt_email(self):
+    # page input email
+
+    # target email
+    target_email = self.contact["linkEmail"]
+    flag = 0  # 重复次数记录
+
+    def again_input():
+        nonlocal flag
+        flag += 1
+        if flag > 3:
+            raise Exception("邮箱填写错误。")
+
+        page_receipt_email = self.get_text(
+            xpath='//*[@resource-id="com.southwestairlines.mobile:id/booking_passenger_email_receipt_to"]//android.widget.EditText'
+        ).strip()
+
+        if page_receipt_email.lower() == target_email.lower().strip():
+            flag = 0
+        else:
+            self.send_keys(
+                xpath='//*[@resource-id="com.southwestairlines.mobile:id/booking_passenger_email_receipt_to"]//android.widget.EditText',
+                content=target_email
+            )
+            # 递归输入
+            again_input()
+
+    return again_input()
+
+
 if __name__ == '__main__':
     # 测试
     test_data = [

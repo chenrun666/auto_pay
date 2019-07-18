@@ -15,6 +15,7 @@ def select_flight_wrapper(func):
         nonlocal flag
         flag += 1
         if flag > 8:
+            flag = 0
             raise NoFlightException("没有匹配到目标航班")
         # 根据时间选择航班
         all_slifht_obj_list = self.get_obj_list(
@@ -40,6 +41,8 @@ def select_flight_wrapper(func):
             if str(int(target_flight_start_time[:2])) + ":" + target_flight_start_time[2:] == flight_start_time:
                 # 选择该航班
                 item.click()
+                # 将flag重置为0, 避免影响下一次的跑单。
+                flag = 0
 
                 time.sleep(2)
                 # 获取页面航班号

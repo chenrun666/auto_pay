@@ -2,6 +2,7 @@ import time
 import calendar
 
 from utils.utils import select_flight_date, select_passengers, select_birthday, select_gender
+from utils.utils import check_receipt_email
 
 from common.myexception import NoFlightException, PriceException, StopException, PnrException
 
@@ -339,6 +340,24 @@ def check_passengers_info_wrapper(func):
 
             if page_gender != self.passenger_list[index]["sex"].upper():
                 raise StopException("乘客信息选择错误(性别选择错误), 终止购买")
+
+            if index == 0:
+                # 校验email选择是否正确
+                self.swipe(distance=400)
+
+                page_contact_email = self.get_text(
+                    xpath=xpath_templ.format(
+                        "com.southwestairlines.mobile:id/booking_passenger_contact_method_edit_text")
+                ).split(":")[1].strip()
+                page_receipt_email = self.get_text(
+                    xpath='//*[@resource-id="com.southwestairlines.mobile:id/booking_passenger_email_receipt_to"]//android.widget.EditText'
+                ).strip()
+
+                # 单独判断接收邮箱是否正确如果错误进行重新填写
+                check_receipt_email(self)
+
+                if page_receipt_email != self.contact["linkEmail"] or page_contact_email != self.contact["linkEmail"]:
+                    raise StopException("邮箱信息填写错误")
 
             self.click(
                 xpath='//*[@resource-id="com.southwestairlines.mobile:id/action_done"]'
