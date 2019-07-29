@@ -238,6 +238,41 @@ class Action(object):
         else:
             return False
 
+    def select_something(self, xpath, value=None, text=None, el=None, index=None):
+        """
+        1 select_by_index          # 通过索引定位
+        2 select_by_value          # 通过value值定位
+        3 select_by_visible_text   # 通过文本值定位
+
+        1 options                  # 返回select元素所有的options
+        2 all_selected_options     # 返回select元素中所有已选中的选项
+        3 first_selected_options   # 返回select元素中选中的第一个选项
+
+        1 deselect_all             # 取消全部的已选择项
+        2 deselect_by_index        # 取消已选中的索引项
+        3 deselect_by_value        # 取消已选中的value值
+        4 deselect_by_visible_text # 取消已选中的文本值
+        :return:
+        """
+        try:
+            if not el:
+                if value:
+                    Select(self.driver.find_element_by_xpath(xpath)).select_by_value(value)
+                elif text:
+                    Select(self.driver.find_element_by_xpath(xpath)).select_by_visible_text(text)
+                elif index:
+                    Select(self.driver.find_element_by_xpath(xpath)).select_by_index(index)
+            else:
+                if value:
+                    Select(el.find_element_by_xpath(xpath)).select_by_value(value)
+                elif text:
+                    Select(el.find_element_by_xpath(xpath)).select_by_visible_text(text)
+                elif index:
+                    Select(el.find_element_by_xpath(xpath)).select_by_index(index)
+        except Exception as e:
+            logger.error(f"选择发生错误，错误提示{e}。")
+            raise StopException(f"选择{value}发生错误")
+
     def close(self):
         try:
             self.driver.close()

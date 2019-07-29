@@ -1,5 +1,7 @@
 import time
 
+from contextlib import contextmanager
+
 from appium import webdriver
 
 from selenium.webdriver.common.by import By
@@ -7,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import InvalidSessionIdException, TimeoutException
 
-from conf.settings import PLATFORM, DEVICE_NAME, APP_PACKAGE, APP_ACTIVITY, DRIVER_SERVER, TIMEOUT
+from conf.settings import PLATFORM, DEVICE_NAME, APP_PACKAGE, APP_ACTIVITY, DRIVER_SERVER, TIMEOUT, BASEDIR
 
 
 class Action:
@@ -27,6 +29,9 @@ class Action:
             "automationName": 'UiAutomator2'  # UiAutomator2
         }
 
+        self.desired_caps["chromeOptions"] = {'androidProcess': 'com.tencent.mm:tools'}
+        self.desired_caps["autoGrantPermissions"] = True
+
         self.driver = webdriver.Remote(DRIVER_SERVER, self.desired_caps)
         self.wait = WebDriverWait(self.driver, TIMEOUT)
 
@@ -43,7 +48,7 @@ class Action:
         obj.click()
         obj.set_text(content)
 
-    def get_text(self, xpath):
+    def get_app_text(self, xpath):
         content = self.wait.until(EC.presence_of_element_located(
             (By.XPATH, xpath)
         )).text
@@ -87,3 +92,13 @@ class Action:
             (By.XPATH, xpath)
         ))
         return obj_list
+
+    # 管理切换原生app和H5页面
+    @contextmanager
+    def switch_native_h5(self):
+        context_list = self.driver.contexts
+        self.driver.switch_to.context(context_list[1])
+
+        yield
+
+        self.driver.switch_to.context(context_list[0])

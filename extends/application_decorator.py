@@ -499,11 +499,14 @@ def fill_bill_info_wrapper(func):
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/billinginfo_country"]'
         )
 
+        country = "CN"
+        if "Ethan" in self.pay_info["cardVO"]["name"]:
+            country = "US"
         flag = False
         while 1:
             for item in self.get_obj_list(
                     xpath='//*[@resource-id="com.southwestairlines.mobile:id/select_dialog_listview"]/android.widget.CheckedTextView'):
-                if "CN" in item.text:
+                if country in item.text:
                     flag = True
                     item.click()
                     break
@@ -521,27 +524,56 @@ def fill_bill_info_wrapper(func):
 
         self.send_keys(
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/billinginfo_street_1"]//android.widget.EditText',
-            content="beijingshi"
+            content=self.pay_info["cardVO"]["address"]
         )
 
         self.send_keys(
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/billinginfo_postal"]//android.widget.EditText',
-            content="100000"
+            content=self.pay_info["cardVO"]["zipCode"]
+        )
+
+        # 滑动到底部
+        self.swipe(
+            distance=500
         )
 
         self.send_keys(
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/billinginfo_city"]//android.widget.EditText',
-            content="beijingshi"
+            content=self.pay_info["cardVO"]["city"]
         )
 
-        self.send_keys(
-            xpath='//*[@resource-id="com.southwestairlines.mobile:id/billinginfo_province"]//android.widget.EditText',
-            content="beijingshi"
-        )
+        if country == "CN":
+            self.send_keys(
+                xpath='//*[@resource-id="com.southwestairlines.mobile:id/billinginfo_province"]//android.widget.EditText',
+                content="beijingshi"
+            )
+        else:
+            self.click(
+                xpath=xpath_templ.format('com.southwestairlines.mobile:id/billinginfo_state')
+            )
+            flag = False
+            while 1:
+                for item in self.get_obj_list(
+                        xpath='//*[@resource-id="com.southwestairlines.mobile:id/select_dialog_listview"]/android.widget.CheckedTextView'):
+                    if self.pay_info["cardVO"]["province"] in item.text.upper():
+                        flag = True
+                        item.click()
+                        break
+                else:
+                    self.swipe(
+                        distance=500
+                    )
+                if flag:
+                    break
+
+            # 点击OK
+            self.click(
+                xpath=xpath_templ.format("android:id/button1")
+            )
 
         self.get_obj_list(
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/billinginfo_phone"]//android.widget.EditText'
-        )[0].set_text("17710407835")
+        )[0].set_text(self.contact["linkPhone"])
         self.get_obj_list(
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/billinginfo_phone"]//android.widget.EditText'
         )[0].click()

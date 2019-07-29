@@ -1,17 +1,30 @@
+import os
+
+BASEDIR = os.path.dirname(os.path.dirname(__file__))
+
 DEBUG = True
 
 # MODE = "mobile"
 MODE = "web"
 # MODE = "POST"
 
+CAEGORY = "FD"
+# CAEGORY = ""
 
 # 手机配置
 PLATFORM = "Android"
-DEVICE_NAME = "127.0.0.1:5555"
-# DEVICE_NAME = "983a9da7"
-APP_PACKAGE = "com.southwestairlines.mobile"
-APP_ACTIVITY = 'com.southwestairlines.mobile.splash.SplashActivity'
-TIMEOUT = 30
+DEVICE_NAME = "emulator-5554"
+
+if CAEGORY == "FD":
+    DEVICE_NAME = "0a2096f90105"
+    APP_PACKAGE = "com.tencent.mm"
+    APP_ACTIVITY = '.ui.LauncherUI'
+else:
+    # DEVICE_NAME = "983a9da7"
+    APP_PACKAGE = "com.southwestairlines.mobile"
+    APP_ACTIVITY = 'com.southwestairlines.mobile.splash.SplashActivity'
+
+TIMEOUT = 40
 DRIVER_SERVER = 'http://localhost:4723/wd/hub'
 
 PROXY = True

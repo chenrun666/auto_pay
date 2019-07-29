@@ -7,7 +7,7 @@ from common.application_action import Action
 
 from conf.settings import RESULT
 
-from utils.utils import parse_passenger_info
+from utils.utils import calculation_age
 
 from extends.application_decorator import payment_wrapper
 from extends.application_decorator import fill_payment_info_wrapper, fill_bill_info_wrapper
@@ -35,6 +35,12 @@ class WN(Action):
 
         # 支付信息
         self.pay_info = task["payPaymentInfoVo"]
+        # 初始化支付的账单地址信息
+        if "VCC" in self.pay_info["cardVO"]["name"]:
+            self.pay_info["cardVO"]["address"] = "beijingshi"
+            self.pay_info["cardVO"]["city"] = "beijingshi"
+            self.pay_info["cardVO"]["zipCode"] = "100000"
+            self.pay_info["cardVO"]["province"] = "beijingshi"
 
         # 目标价格
         self.target_price = task["targetPrice"]
@@ -44,15 +50,6 @@ class WN(Action):
         # infant, self.adult, self.senior = parse_passenger_info(self.passenger_list, self.dep_date)
         infant, self.adult, self.senior = 0, len(self.passenger_list), 0
 
-        # 组织回填数据
-        # self.back_fill = copy.deepcopy(RESULT)
-        # self.back_fill["payTaskId"] = task["pnrVO"]["payTaskId"]
-        # self.back_fill["linkEmail"] = self.contact["linkEmail"]
-        # self.back_fill["linkEmailPassword"] = self.contact["linkEmailPassword"]
-        # self.back_fill["linkPhone"] = self.contact["linkPhone"]
-        # self.back_fill["nameList"] = [name["name"] for name in self.passenger_list]
-        # self.back_fill["sourceCur"] = task["sourceCurrency"]
-        # self.back_fill["targetCur"] = task["targetCurrency"]
         self.back_fill = task["pnrVO"]
         self.back_fill["sourceCur"] = task["sourceCurrency"]
         self.back_fill["targetCur"] = task["targetCurrency"]

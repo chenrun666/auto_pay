@@ -1,43 +1,83 @@
 """
 公用的方法
 """
-import calendar
 import time
+import datetime
+import calendar
 
 from dateutil.parser import parse
 
 from selenium.common.exceptions import NoSuchElementException
 
+month_days = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
 
-def parse_passenger_info(passengers_info: list, flight_date: str) -> tuple:
-    """
-    解析乘客信息，返回乘客总数，成人，青年，儿童数目
 
-    passengers_info: 任务的乘客信息
-    flight_date: 航班起飞时间
-    :return: 婴儿， 成人，老人
-    """
-    infant = 0
-    adult = 0  # 2+
-    senior = 0  # 65+
-    # 起飞的时间处理
-    flight_date_obj = parse(flight_date)
+def is_leap(year):
+    """判断是否为瑞年"""
+    if year % 400 == 0 or year % 40 == 0 or year % 4 == 0:
+        return True
+    else:
+        return False
 
-    for item in passengers_info:
-        age = item.get("birthday")
-        age_time_obj = parse(age)
 
-        delta = (flight_date_obj - age_time_obj).days
-        years = delta // 365
-
-        if 2 <= years <= 64:
-            adult += 1
-        elif years >= 65:
-            senior += 1
+def minus_result(first_year, second_year):
+    y = first_year.year - second_year.year
+    m = first_year.month - second_year.month
+    d = first_year.day - second_year.day
+    if d < 0:
+        if second_year.month == 2:
+            if is_leap(second_year.year):
+                month_days[2] = 29
+        d += month_days[second_year.month]
+        m -= 1
+    if m < 0:
+        m += 12
+        y -= 1
+    if y == 0:
+        if m == 0:
+            return 0, 0, d
+            # return ('{}天'.format(d))
         else:
-            infant += 1
+            return 0, m, d
+            # return ('{}月{}天'.format(m, d))
+    else:
+        return y, m, d
+        # return ('{}岁{}月{}天'.format(y, m, d))
 
-    return infant, adult, senior
+
+def calculation_age(fligth_date: str, passengers_list: list) -> tuple:
+    """
+    计算list中乘客的年龄，计算出大人小孩婴儿的数量
+    :return:
+    """
+    adult_num = 0
+    child_num = 0
+    infant_num = 0
+
+    for passenger in passengers_list:
+        birth_year, birth_mon, birth_day = passenger["birthday"].split("-")
+        birth_obj = datetime.datetime(
+            year=int(birth_year), month=int(birth_mon), day=int(birth_day)
+        )
+
+        # 飞机起飞时间
+        flight_date_year, flight_date_mon, flight_date_day = fligth_date.split("-")
+        flight_date_obj = datetime.datetime(
+            year=int(flight_date_year),
+            month=int(flight_date_mon),
+            day=int(flight_date_day)
+        )
+
+        passenger_age = minus_result(flight_date_obj, birth_obj)[0]  # 获取乘客年龄
+
+        if passenger_age < 2:
+            infant_num += 1
+        elif passenger_age < 12:
+            child_num += 1
+        else:
+            adult_num += 1
+
+    return adult_num, child_num, infant_num
 
 
 # 选择目标日历
@@ -69,7 +109,7 @@ def select_flight_date(self, target_date):
                         xpath=f'//android.widget.TextView[contains(@text, "{target_month_eng}")]/following-sibling::*[2]//*[contains(@text, "{target_day_str}")]'
                     )[0].click()
                     break
-                except NoSuchElementException:
+                except (NoSuchElementException, IndexError):
                     self.swipe(
                         distance=150
                     )
