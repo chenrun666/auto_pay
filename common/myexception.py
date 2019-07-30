@@ -26,3 +26,8 @@ class PostDataEception(Exception):
 class PnrException(Exception):
     def __init__(self, msg):
         self.msg = msg
+
+
+class SelectedInfoException(Exception):
+    def __init__(self, msg):
+        self.msg = msg

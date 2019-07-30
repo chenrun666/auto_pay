@@ -64,13 +64,9 @@ class WN(Action, WebAction):
         pass
 
     @check_selected_info_wrapper
+    @check_passengers_info_wrapper
     def check_selected_info(self):
         pass
-
-    def book(self):
-        self.click(
-            xpath='//android.view.View[@content-desc="我不选座，直接提交订单"]'
-        )
 
     def main(self):
         try:
@@ -82,23 +78,27 @@ class WN(Action, WebAction):
             self.check_selected_info()
         except (SearchException, StopException) as e:
             self.back_fill["status"] = 401
-            self.back_fill["msg"] = str(e)
+            self.back_fill["errorMessage"] = str(e)
             logger.error(e)
         except NoFlightException as e:
             self.back_fill["status"] = 401
-            self.back_fill["msg"] = str(e)
+            self.back_fill["errorMessage"] = str(e)
             logger.error(e)
         except PriceException as e:
             self.back_fill["status"] = 403
-            self.back_fill["msg"] = str(e)
+            self.back_fill["errorMessage"] = str(e)
             logger.error(e)
         except PnrException as e:
             self.back_fill["status"] = 440
-            self.back_fill["msg"] = str(e)
+            self.back_fill["errorMessage"] = str(e)
             logger.error(e)
+        except SelectedInfoException as e:
+            self.back_fill["status"] = 401
+            self.back_fill["errorMessage"] = str(e)
         except Exception as e:
-            self.back_fill["status"] = 250
-            self.back_fill["msg"] = str(e)
+            if not self.back_fill.get("status"):
+                self.back_fill["status"] = 401
+            self.back_fill["errorMessage"] = str(e)
             logger.exception(e)
         finally:
             self.driver.close_app()

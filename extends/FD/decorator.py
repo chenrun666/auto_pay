@@ -1,10 +1,7 @@
+import re
 import time
 
-from selenium.common.exceptions import NoSuchElementException
-
-from .country import country_code
-
-from common.myexception import NoFlightException, PriceException
+from common.myexception import NoFlightException, PriceException, SelectedInfoException
 
 
 def login_wrapper(func):
@@ -20,6 +17,7 @@ def clear_passengers_wrapper(func):
         self.click(
             xpath='//*[@resource-id="android:id/content"]/following-sibling::*[1]//android.support.v7.widget.LinearLayoutCompat/*[1]'
         )
+        time.sleep(2)
 
         # 输入搜索内容
         self.send_keys(
@@ -35,6 +33,7 @@ def clear_passengers_wrapper(func):
         self.click(
             xpath='//android.widget.TextView[@text="订机票"]'
         )
+        time.sleep(3)
 
         # 点击常用信息
         self.click(
@@ -229,18 +228,15 @@ def select_flight_wrapper(func):
             )
             for flight_info in all_flights_list:
                 # 获取航班号
-                page_flight_num = self.get_text(
+                page_flight_num = self.get_ele_list(
                     xpath='.//div[@class="schedule"]',
                     el=flight_info
-                ).split("\n")
+                )[-1].text.split("\n")
                 page_flight_num.pop(-1)
                 page_flight_num = [''.join(item.split()) for item in page_flight_num]
 
                 if page_flight_num == self.dep_flight_number.split("/"):
-                    self.click_btn(
-                        xpath='.//div[@class="schedule"]',
-                        el=flight_info
-                    )
+                    flight_info.click()
                     break
             else:
                 raise NoFlightException("没有匹配到航班")
@@ -284,9 +280,15 @@ def fill_passengers_info_wrapper(func):
         for passenger in self.passenger_list:
             with self.switch_native_h5():
                 # 点击新增
-                self.click(
-                    xpath='//div[@class="add"]'
-                )
+                # 区分儿童的add按钮
+                if self.passenger_list.index(passenger) + 1 <= self.adult:
+                    self.click(
+                        xpath='//div[@class="add"]'
+                    )
+                else:
+                    self.click(
+                        xpath='//div[@class="kids"]//div[@class="add"]'
+                    )
                 # 输入名字
                 last_name, first_name = passenger["name"].split("/")
                 self.fill_input(
@@ -321,6 +323,7 @@ def fill_passengers_info_wrapper(func):
                 self.click(
                     xpath=f'//tr[@class="birthday"]//input'
                 )
+                time.sleep(1)
             select_birthday(self, passenger["birthday"])
 
             # 点击确定
@@ -400,13 +403,101 @@ def check_selected_info_wrapper(func):
             #     xpath='//div[contains(text(), "成人票")]/following-sibling::*[1]'
             # ).split()[0][1:]
             self.click(
-                xpath='//*[contains(text(), "明细")]'
+                xpath='//div[@class="detail"]'
             )
+            time.sleep(1)
+            # 获取所有明细
             detail_info = self.get_ele_list(
-                xpath='//div[@class="detail-wrapper"]//div[@class="item"]'
+                xpath='//div[contains(@class, "detail-wrapper")]//div[@class="item"]'
             )
 
-            pass
+            flight_total_price = 0
+            luggage_sum_weight = 0
+            luggage_sum_price = 0
+            for item in detail_info:
+                if "成人票" in item.text or "儿童票" in item.text:
+                    total_price = float(re.findall(r"(\d+)?\s{2}", item.text)[0].replace(",", ""))
+                    flight_total_price += total_price
+                elif "托运行李" in item.text:
+                    luggage_weight, luggage_price = re.findall(r"(\d+)kg.*?(\d+[.]{0,1}\d+)?\s{2}", item.text, re.S)[0]
+                    luggage_sum_weight += float(luggage_weight)
+                    luggage_sum_price += float(luggage_price)
+
+                # 回填支付价格和行李价格
+            self.back_fill["price"] = flight_total_price
+            self.back_fill["baggagePrice"] = luggage_sum_price
+
+            # 校验行李重量是否正确
+            if luggage_sum_weight != sum(map(lambda x: int(x["baggageWeight"]), self.passenger_list)):
+                raise SelectedInfoException("行李选择错误。请重新执行该任务！！")
+
+            # 校验价格是否超出任务价格
+            if flight_total_price > self.task_flight_price * len(self.passenger_list):
+                raise PriceException("价格超出了任务价格")
+
+            self.click(
+                xpath='//div[@class="detail"]'
+            )
+            time.sleep(1)
+
+            self.scroll_screen(el='//div[@class="button-wrapper"]')
+            time.sleep(1)
+            # 点击提交订单
+            self.click(
+                xpath='//div[@class="button-wrapper"]'
+            )
+            # 关闭提示
+            self.click(
+                xpath='//div[text()="确定"]'
+            )
+
+        func(self)
+
+    return inner
+
+
+def check_passengers_info_wrapper(func):
+    def inner(self, *args, **kwargs):
+        gender_map = {
+            "先生": "M",
+            "女士": "F",
+            "女童": "F",
+            "男童": "M"
+        }
+
+        # 检查乘机人信息是否正确
+        with self.switch_native_h5():
+            # 获取所有的乘客信息
+            all_passengers_info = self.get_ele_list(
+                xpath='//table[@class="passenger"]'
+            )
+            for index, passenger in enumerate(all_passengers_info):
+                page_passenger_first_name, page_passenger_last_name = re.findall(
+                    r"([A-Z \s]+)",
+                    self.get_text(xpath='.//td[2]', el=passenger)
+                )[0].strip().split()
+                gender = self.get_text(
+                    xpath='./tr[2]/td[2]',
+                    el=passenger
+                )
+                birthday = self.get_text(
+                    xpath='./tr[3]/td[2]',
+                    el=passenger
+                )
+                if self.passenger_list[index]["name"] != f"{page_passenger_last_name}/{page_passenger_first_name}" \
+                        or self.passenger_list[index]["sex"] != gender_map[gender] \
+                        or self.passenger_list[index]["birthday"] != birthday:
+                    raise SelectedInfoException("乘客信息填写有误，请重新执行该任务！！！")
+
+            # 点击同意条款
+            self.click(
+                xpath='//div[@class="part agreement"]//img'
+            )
+
+            # 点击下一步
+            self.click(
+                xpath='//div[@class="next"]'
+            )
 
         func(self)
 
@@ -414,12 +505,27 @@ def check_selected_info_wrapper(func):
 
 
 def select_birthday(self, target_birthday):
+    month_map = {
+        "01": "一",
+        "02": "二",
+        "03": "三",
+        "04": "四",
+        "05": "五",
+        "06": "六",
+        "07": "七",
+        "08": "八",
+        "09": "九",
+        "10": "十",
+        "11": "十一",
+        "12": "十二",
+    }
     target_year, target_month, target_day = target_birthday.split("-")
-
+    time.sleep(3)
     # 选择天
     self.click(
-        xpath=f'//android.view.View[contains(@content-desc, "{target_day}")]'
+        xpath=f'//android.view.View[@content-desc="{target_day} {month_map[target_month]}月 {target_year}"]'
     )
+    time.sleep(2)
 
     # 点击设置
     self.click(

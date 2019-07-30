@@ -29,6 +29,8 @@ class Action:
             "automationName": 'UiAutomator2'  # UiAutomator2
         }
 
+        # 获取手机的唯一标示
+        self.desired_caps["deviceName"] = "a2cdacf7"
         self.desired_caps["chromeOptions"] = {'androidProcess': 'com.tencent.mm:tools'}
         self.desired_caps["autoGrantPermissions"] = True
 

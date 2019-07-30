@@ -155,10 +155,10 @@ def check_flight_info_wrapper(func):
             flight_second_flight = None
 
         if flight_second_flight:
-            page_flight_first_num = self.get_text(
+            page_flight_first_num = self.get_app_text(
                 xpath=xpath_templ.format('com.southwestairlines.mobile:id/reservation_view_card_flight_number')
             )
-            page_flight_second_num = self.get_text(
+            page_flight_second_num = self.get_app_text(
                 xpath=xpath_templ.format(
                     'com.southwestairlines.mobile:id/reservation_view_card_secondary_flight_number')
             )
@@ -166,24 +166,24 @@ def check_flight_info_wrapper(func):
                 raise NoFlightException("航班选择错误，中断程序")
 
         else:
-            page_flight_first_num = self.get_text(
+            page_flight_first_num = self.get_app_text(
                 xpath=xpath_templ.format('com.southwestairlines.mobile:id/reservation_view_card_flight_number')
             )
             if flight_first_num != page_flight_first_num:
                 raise NoFlightException("航班选择错误, 中断程序")
 
         # 检测出发地和目的地是否选择正确
-        start = self.get_text(
+        start = self.get_app_text(
             xpath=xpath_templ.format("com.southwestairlines.mobile:id/reservation_view_card_departure_airport_code")
         )
-        end = self.get_text(
+        end = self.get_app_text(
             xpath=xpath_templ.format("com.southwestairlines.mobile:id/reservation_view_card_arrival_airport_code")
         )
         if start != self.dep_airport or end != self.arr_airport:
             raise NoFlightException("出发地和目的地选择错误，中断执行")
 
         # 校验航班日期选择是否正确
-        page_flight_date = self.get_text(
+        page_flight_date = self.get_app_text(
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/reservation_view_card_date"]'
         )
         _, month_day, year = [item.strip() for item in page_flight_date.split(",")]
@@ -207,7 +207,7 @@ def check_flight_price_wrapper(func):
         )
 
         # 获取页面总价格
-        page_total_price = self.get_text(
+        page_total_price = self.get_app_text(
             xpath='//*[@resource-id="com.southwestairlines.mobile:id/money_total_value"]'
         )[1:].replace(",", "")
 
@@ -312,10 +312,10 @@ def check_passengers_info_wrapper(func):
             )
             # 点开每个乘客的填写信息。进行校验
             # 获取页面的乘客详细信息
-            page_first_name = self.get_text(
+            page_first_name = self.get_app_text(
                 xpath='//*[@resource-id="com.southwestairlines.mobile:id/booking_passenger_firstname"]//android.widget.EditText'
             )
-            page_last_name = self.get_text(
+            page_last_name = self.get_app_text(
                 xpath='//*[@resource-id="com.southwestairlines.mobile:id/booking_passenger_lastname"]//android.widget.EditText'
             )
 
@@ -324,7 +324,7 @@ def check_passengers_info_wrapper(func):
                 raise StopException("乘客信息填写错误(姓名填写错误)，终止购买")
 
             # 获取乘客的生日
-            page_birth = self.get_text(
+            page_birth = self.get_app_text(
                 xpath='//*[@resource-id="com.southwestairlines.mobile:id/booking_passenger_dob_picker_edittext"]'
             )
             target_birth_list = [i[-2:] for i in self.passenger_list[index]["birthday"].split("-")]
@@ -334,7 +334,7 @@ def check_passengers_info_wrapper(func):
                 raise StopException("乘客信息填写错误(生日选择错误)，终止购买")
 
             # 获取性别
-            page_gender = self.get_text(
+            page_gender = self.get_app_text(
                 xpath='//*[@resource-id="com.southwestairlines.mobile:id/booking_passenger_gender_picker_edittext"]'
             )[0].upper()
 
@@ -345,11 +345,11 @@ def check_passengers_info_wrapper(func):
                 # 校验email选择是否正确
                 self.swipe(distance=400)
 
-                page_contact_email = self.get_text(
+                page_contact_email = self.get_app_text(
                     xpath=xpath_templ.format(
                         "com.southwestairlines.mobile:id/booking_passenger_contact_method_edit_text")
                 ).split(":")[1].strip()
-                page_receipt_email = self.get_text(
+                page_receipt_email = self.get_app_text(
                     xpath='//*[@resource-id="com.southwestairlines.mobile:id/booking_passenger_email_receipt_to"]//android.widget.EditText'
                 ).strip()
 
@@ -605,7 +605,7 @@ def payment_wrapper(func):
 
         # 获取pnr
         try:
-            pnr = self.get_text(
+            pnr = self.get_app_text(
                 xpath='//*[@resource-id="com.southwestairlines.mobile:id/confirmation_number"]'
             )
             self.back_fill["pnr"] = pnr

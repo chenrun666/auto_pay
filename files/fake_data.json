@@ -48,8 +48,21 @@
     {
       "id": 1388105,
       "name": "CHEN/RUN",
-      "sex": "M",
+      "sex": "F",
       "birthday": "1999-06-22",
+      "nationality": "CN",
+      "cardNum": "EE9842587",
+      "cardExpired": "20281217",
+      "cardIssuePlace": "CN",
+      "cardType": "PP",
+      "baggageWeight": 40,
+      "baggagePrice": 0.0
+    },
+    {
+      "id": 1388105,
+      "name": "PENG/RUN",
+      "sex": "M",
+      "birthday": "2015-06-22",
       "nationality": "CN",
       "cardNum": "EE9842587",
       "cardExpired": "20281217",
