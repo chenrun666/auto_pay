@@ -26,7 +26,7 @@ class Action:
             'newCommandTimeout': 5000,
             'adbExecTimeout': 50000,
             # 'avdReadyTimeout': '300000',
-            "automationName": 'UiAutomator2'  # UiAutomator2
+            # "automationName": 'UiAutomator2'  # UiAutomator2
         }
 
         # 获取手机的唯一标示

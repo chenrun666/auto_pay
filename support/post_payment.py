@@ -6,7 +6,7 @@ from common.stroge import rdb
 from common.log import logger
 from common.myexception import *
 
-from utils.utils import parse_passenger_info
+from utils.utils import calculation_age
 
 from extends.post_decorator import select_flight_wrapper, checkout_price_wrapper
 from extends.post_decorator import fill_contact_wrapper, fill_passengers_wrapper, fill_pay_info_wrapper  # 填写信息的装饰器

@@ -6,7 +6,7 @@ from common.log import logger
 from common.action import Action
 from common.myexception import *
 
-from utils.utils import parse_passenger_info
+from utils.utils import calculation_age
 
 from extends.decorator import select_flight_wrapper, checkout_price_wrapper
 from extends.decorator import fill_contact_wrapper, fill_passengers_wrapper, fill_pay_info_wrapper  # 填写信息的装饰器
@@ -33,7 +33,7 @@ class WN(Action):
 
         # 乘客信息
         self.passenger_list = task["passengerVOList"]
-        infant, adult, senior = parse_passenger_info(self.passenger_list, self.dep_date)
+        infant, adult, senior = calculation_age(self.dep_date, self.passenger_list)
 
         url = f"https://www.southwest.com/air/booking/select.html?int=HOMEQBOMAIR&adultPassengersCount={adult}&departureDate={self.dep_date}&departureTimeOfDay=ALL_DAY&destinationAirportCode={self.arr_airport}&fareType=USD&originationAirportCode={self.dep_airport}&passengerType=ADULT&promoCode=&reset=true&returnDate=&returnTimeOfDay=ALL_DAY&seniorPassengersCount={senior}&tripType=oneway"
         super(WN, self).__init__(url)

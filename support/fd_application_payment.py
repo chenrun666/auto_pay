@@ -5,12 +5,13 @@ from common.log import logger
 from common.myexception import *
 from common.application_action import Action
 from common.action import Action as WebAction
+from conf.settings import CLIENTTYPE, MACHINECODE
 
 from extends.FD import *
 from utils.utils import calculation_age
 
 
-class WN(Action, WebAction):
+class FDWeChat(Action, WebAction):
     def __init__(self, task):
 
         # 初始化任务信息
@@ -35,9 +36,9 @@ class WN(Action, WebAction):
         self.adult, self.child, self.infant = calculation_age(self.dep_date, self.passenger_list)
 
         self.back_fill = task["pnrVO"]
-        self.back_fill["sourceCur"] = task["sourceCurrency"]
-        self.back_fill["targetCur"] = task["targetCurrency"]
-        super(WN, self).__init__()
+        self.back_fill["clientType"] = CLIENTTYPE
+        self.back_fill["machineCode"] = MACHINECODE
+        super(FDWeChat, self).__init__()
 
     @login_wrapper
     @clear_passengers_wrapper
@@ -68,6 +69,14 @@ class WN(Action, WebAction):
     def check_selected_info(self):
         pass
 
+    @payment_wrapper
+    def payment(self):
+        pass
+
+    @get_pnr_wrapper
+    def get_pnr(self):
+        pass
+
     def main(self):
         try:
             self.login()
@@ -76,6 +85,8 @@ class WN(Action, WebAction):
             self.fill_passengers_info()
             self.select_luggage()
             self.check_selected_info()
+            self.payment()
+            self.get_pnr()
         except (SearchException, StopException) as e:
             self.back_fill["status"] = 401
             self.back_fill["errorMessage"] = str(e)
@@ -85,12 +96,12 @@ class WN(Action, WebAction):
             self.back_fill["errorMessage"] = str(e)
             logger.error(e)
         except PriceException as e:
-            self.back_fill["status"] = 403
+            self.back_fill["status"] = 340
             self.back_fill["errorMessage"] = str(e)
             logger.error(e)
         except PnrException as e:
             self.back_fill["status"] = 440
-            self.back_fill["errorMessage"] = str(e)
+            self.back_fill["errorMessage"] = f"请人工核对是否支付。（{str(e)}）"
             logger.error(e)
         except SelectedInfoException as e:
             self.back_fill["status"] = 401
@@ -107,7 +118,16 @@ class WN(Action, WebAction):
 
 
 if __name__ == '__main__':
-    with open("../files/fake_data.json", "r", encoding="utf-8") as f:
-        fake_task = f.read()
-    wn = WN(json.loads(fake_task))
-    wn.main()
+    # with open("../files/fake_data.json", "r", encoding="utf-8") as f:
+    #     fake_task = f.read()
+    # wn = FDWeChat(json.loads(fake_task)["data"])
+    # wn.main()
+
+    from common.task import get_task, back_fill
+
+    while 1:
+        task = get_task()
+        fd = FDWeChat(task)
+        back_result = fd.main()
+
+        back_fill(back_result)

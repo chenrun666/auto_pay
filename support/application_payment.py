@@ -5,7 +5,7 @@ from common.log import logger
 from common.myexception import *
 from common.application_action import Action
 
-from conf.settings import RESULT
+from conf.settings import RESULT, MACHINECODE, CLIENTTYPE
 
 from utils.utils import calculation_age
 
@@ -51,6 +51,9 @@ class WN(Action):
         infant, self.adult, self.senior = 0, len(self.passenger_list), 0
 
         self.back_fill = task["pnrVO"]
+        self.back_fill["machineCode"] = MACHINECODE
+        self.back_fill["clientType"] = CLIENTTYPE
+
         self.back_fill["sourceCur"] = task["sourceCurrency"]
         self.back_fill["targetCur"] = task["targetCurrency"]
         super(WN, self).__init__()

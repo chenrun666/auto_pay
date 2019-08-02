@@ -29,11 +29,11 @@ DRIVER_SERVER = 'http://localhost:4723/wd/hub'
 
 PROXY = True
 
-BROWSER = "chrome"  # 最新版本的chrome访问失败，尝试使用firefox
-# BROWSER = "firefox"
+# BROWSER = "chrome"  # 最新版本的chrome访问失败，尝试使用firefox
+BROWSER = "firefox"
 
-CLIENTTYPE = "WN_APP_CLIENT"
-MACHINECODE = "wn-ip"
+CLIENTTYPE = "FD_WECHAT_CLIENT"
+MACHINECODE = "fd_wechat"
 
 # redis 配置
 REDIS_HOST = "47.92.31.231"

@@ -13,6 +13,7 @@ def login_wrapper(func):
 
 def clear_passengers_wrapper(func):
     def inner(self, *args, **kwargs):
+        time.sleep(2)
         # 点击搜索
         self.click(
             xpath='//*[@resource-id="android:id/content"]/following-sibling::*[1]//android.support.v7.widget.LinearLayoutCompat/*[1]'
@@ -226,6 +227,19 @@ def select_flight_wrapper(func):
             all_flights_list = self.get_ele_list(
                 xpath='//div[@class="flight"]'
             )
+
+            # 获取日期
+            flight_date = self.get_text(
+                xpath='//div[@class="today actived"]/div[1]'
+            )
+
+            if all_flights_list:
+                # 判断路线正确
+                start_code, end_code = re.findall(r".*?\((.*?)\)", all_flights_list[0].text)
+
+                if self.dep_airport != start_code or self.arr_airport != end_code or self.dep_date != flight_date:
+                    raise Exception("路线选择错误。重新选择")
+
             for flight_info in all_flights_list:
                 # 获取航班号
                 page_flight_num = self.get_ele_list(
@@ -297,7 +311,7 @@ def fill_passengers_info_wrapper(func):
                 )
                 self.fill_input(
                     xpath='//tr[@class="firstname"]//input',
-                    content=first_name
+                    content=first_name.replace(" ", "")
                 )
 
                 # 选择性别
@@ -316,7 +330,7 @@ def fill_passengers_info_wrapper(func):
                     birthday_day = int(birthday_day) - 1
                 else:
                     birthday_day = int(birthday_day) + 1
-                fake_birthday = f"{birthday_year}-{birthday_mon}-{birthday_day}"
+                fake_birthday = f"{birthday_year}-{birthday_mon}-{str(birthday_day).zfill(2)}"
                 self.driver.execute_script(
                     f'document.querySelector("tr.birthday input").value = "{fake_birthday}"'
                 )
@@ -411,12 +425,18 @@ def check_selected_info_wrapper(func):
                 xpath='//div[contains(@class, "detail-wrapper")]//div[@class="item"]'
             )
 
+            # 判断币种是否是人民币
+            if self.get_text(
+                    xpath='//div[contains(text(), "成人票")]/following-sibling::*[1]'
+            )[0] != "￥":
+                raise PriceException("支付币种不是人民币。请检查航班币种")
+
             flight_total_price = 0
             luggage_sum_weight = 0
             luggage_sum_price = 0
             for item in detail_info:
                 if "成人票" in item.text or "儿童票" in item.text:
-                    total_price = float(re.findall(r"(\d+)?\s{2}", item.text)[0].replace(",", ""))
+                    total_price = float(re.findall(r"(\d+\.{0,1}\d+)?\s{2}", item.text)[0].replace(",", ""))
                     flight_total_price += total_price
                 elif "托运行李" in item.text:
                     luggage_weight, luggage_price = re.findall(r"(\d+)kg.*?(\d+[.]{0,1}\d+)?\s{2}", item.text, re.S)[0]
@@ -484,7 +504,8 @@ def check_passengers_info_wrapper(func):
                     xpath='./tr[3]/td[2]',
                     el=passenger
                 )
-                if self.passenger_list[index]["name"] != f"{page_passenger_last_name}/{page_passenger_first_name}" \
+                if self.passenger_list[index]["name"].replace(" ", "").upper() != \
+                        f"{page_passenger_last_name}/{page_passenger_first_name}" \
                         or self.passenger_list[index]["sex"] != gender_map[gender] \
                         or self.passenger_list[index]["birthday"] != birthday:
                     raise SelectedInfoException("乘客信息填写有误，请重新执行该任务！！！")
@@ -498,6 +519,80 @@ def check_passengers_info_wrapper(func):
             self.click(
                 xpath='//div[@class="next"]'
             )
+
+            pass
+
+        func(self)
+
+    return inner
+
+
+def payment_wrapper(func):
+    def inner(self, *args, **kwargs):
+        self.back_fill["status"] = 440
+
+        self.get_ele_list(
+            xpath='//android.widget.TextView[contains(@text, "请输入支付密码")]'
+        )
+        time.sleep(5)
+        screen_info = self.driver.get_window_size()
+        width, height = screen_info['width'], screen_info['height']
+
+        start_width = int((width / 3) // 2)
+        start_height = int(height / 4) * 3
+
+        x_distance = int(width / 3)
+        y_distance = int((height - start_height) // 4)
+
+        password = "102928"
+
+        for num in password:
+            # 计算几排几列。整除特殊处理
+
+            res, more = divmod(int(num), 3)
+            if res == 0 and more == 0:
+                res = 3
+                more = 2
+            elif more == 0:
+                more = 3
+                res -= 1
+
+            x = start_width + x_distance * (more - 1)
+            y = start_height + y_distance * res
+            self.driver.tap([(x, y)])
+
+        print("输入完成")
+
+        # 获取实际来支付价格
+        total_price = float(self.get_text(
+            xpath='//android.widget.TextView[contains(@text, "¥")]/following-sibling::*[1]'
+        ).replace(",", ""))
+
+        back_price = ((total_price * 100) - (self.back_fill["baggagePrice"] * 100)) / 100
+        self.back_fill["price"] = back_price
+
+        self.click(
+            xpath='//android.widget.Button[contains(@text, "完成")]'
+        )
+
+        func(self)
+
+    return inner
+
+
+def get_pnr_wrapper(func):
+    def inner(self, *args, **kwargs):
+        time.sleep(8)
+        # 获取票号
+        try:
+            with self.switch_native_h5():
+                pnr = self.get_text(
+                    xpath='//strong[@class="weui-dialog__title"]/../following-sibling::*[1]'
+                ).split(":")[1]
+                self.back_fill["pnr"] = pnr
+                self.back_fill["status"] = 450
+        except Exception:
+            pass
 
         func(self)
 
@@ -520,12 +615,12 @@ def select_birthday(self, target_birthday):
         "12": "十二",
     }
     target_year, target_month, target_day = target_birthday.split("-")
-    time.sleep(3)
+    time.sleep(1)
     # 选择天
     self.click(
         xpath=f'//android.view.View[@content-desc="{target_day} {month_map[target_month]}月 {target_year}"]'
     )
-    time.sleep(2)
+    time.sleep(1)
 
     # 点击设置
     self.click(

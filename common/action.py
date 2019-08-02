@@ -44,12 +44,12 @@ class Action(object):
                 # profile_directory = "/Users/chenrun/Library/Application Support/Firefox/Profiles/3y3i8wyv.default"
                 # profile = webdriver.FirefoxProfile(profile_directory)
                 profile = webdriver.FirefoxProfile()
-                # profile.set_preference('network.proxy.type', 1)
-                # profile.set_preference('network.proxy.http', '127.0.0.1')
-                # profile.set_preference('network.proxy.http_port', 8080)
-                # profile.set_preference('network.proxy.ssl', '127.0.0.1')
-                # profile.set_preference('network.proxy.ssl_port', 8080)
-                # profile.update_preferences()
+                profile.set_preference('network.proxy.type', 1)
+                profile.set_preference('network.proxy.http', '127.0.0.1')
+                profile.set_preference('network.proxy.http_port', 8080)
+                profile.set_preference('network.proxy.ssl', '127.0.0.1')
+                profile.set_preference('network.proxy.ssl_port', 8080)
+                profile.update_preferences()
                 self.driver = webdriver.Firefox(profile)
                 # js = "Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});"
                 # self.driver.execute_script(js)
